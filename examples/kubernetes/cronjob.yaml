@@ -1,0 +1,97 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: datafold-config
+data:
+  datafold.yaml: |
+    version: "1"
+    agent:
+      id: k8s-datafold-agent
+    storage:
+      backend: sqlite
+      path: /app/data/datafold.db
+    sources:
+      - name: orders_daily
+        type: sql
+        dialect: postgres
+        connection: ${DATABASE_URL}
+        query: |
+          SELECT COUNT(*) as row_count,
+                 MAX(created_at) as latest_timestamp
+          FROM orders
+          WHERE created_at >= NOW() - INTERVAL '24 hours'
+        schedule: "0 */6 * * *"
+        freshness:
+          max_age_hours: 8
+        volume:
+          min_row_count: 100
+    alerting:
+      cooldown_minutes: 60
+      webhooks:
+        - name: slack
+          url: ${SLACK_WEBHOOK_URL}
+          events: [anomaly, recovery]
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: datafold-secrets
+type: Opaque
+stringData:
+  DATABASE_URL: "postgresql://user:pass@host:5432/db"
+  SLACK_WEBHOOK_URL: "https://hooks.slack.com/services/..."
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: datafold-state
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: datafold-check
+spec:
+  schedule: "*/15 * * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: datafold
+              image: ghcr.io/datafold/agent:latest
+              command: ["datafold", "check", "--force"]
+              envFrom:
+                - secretRef:
+                    name: datafold-secrets
+              volumeMounts:
+                - name: config
+                  mountPath: /app/datafold.yaml
+                  subPath: datafold.yaml
+                  readOnly: true
+                - name: state
+                  mountPath: /app/data
+              resources:
+                requests:
+                  memory: "64Mi"
+                  cpu: "100m"
+                limits:
+                  memory: "256Mi"
+                  cpu: "500m"
+          volumes:
+            - name: config
+              configMap:
+                name: datafold-config
+            - name: state
+              persistentVolumeClaim:
+                claimName: datafold-state

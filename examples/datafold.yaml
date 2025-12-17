@@ -1,0 +1,96 @@
+# DataFold Agent - Example Configuration
+# Copy this file to your project and customize
+
+version: "1"
+
+agent:
+  id: my-datafold-agent
+  log_level: info  # debug, info, warn, error
+
+storage:
+  backend: sqlite
+  path: ./datafold.db
+  # For Postgres (multi-agent setups):
+  # backend: postgres
+  # connection: ${DATAFOLD_DATABASE_URL}
+
+sources:
+  # PostgreSQL example
+  - name: orders_daily
+    type: sql
+    dialect: postgres
+    connection: ${DATABASE_URL}
+    query: |
+      SELECT 
+        COUNT(*) as row_count,
+        MAX(created_at) as latest_timestamp
+      FROM orders
+      WHERE created_at >= NOW() - INTERVAL '24 hours'
+    schedule: "0 */6 * * *"  # Every 6 hours
+    freshness:
+      max_age_hours: 8       # Alert if data older than 8h
+    volume:
+      min_row_count: 100     # Alert if fewer than 100 rows
+
+  # MySQL example
+  - name: users_hourly
+    type: sql
+    dialect: mysql
+    connection: ${MYSQL_URL}
+    query: |
+      SELECT 
+        COUNT(*) as row_count,
+        MAX(updated_at) as latest_timestamp
+      FROM users
+      WHERE updated_at >= DATE_SUB(NOW(), INTERVAL 1 HOUR)
+    schedule: "5 * * * *"    # 5 minutes past every hour
+    freshness:
+      max_age_hours: 2
+    volume:
+      min_row_count: 50
+
+  # ClickHouse example (analytics)
+  - name: events_stream
+    type: sql
+    dialect: clickhouse
+    connection: ${CLICKHOUSE_URL}
+    query: |
+      SELECT 
+        count() as row_count,
+        max(timestamp) as latest_timestamp
+      FROM events
+      WHERE timestamp >= now() - INTERVAL 1 HOUR
+    schedule: "*/15 * * * *"  # Every 15 minutes
+    freshness:
+      max_age_hours: 1
+    volume:
+      deviation_factor: 2.0   # Alert on 2x stddev from baseline
+
+alerting:
+  cooldown_minutes: 60  # Don't repeat alerts within 1 hour
+  
+  webhooks:
+    # Slack
+    - name: slack-alerts
+      url: ${SLACK_WEBHOOK_URL}
+      secret: ${WEBHOOK_SECRET}
+      events: [anomaly, recovery]
+      timeout_seconds: 10
+
+    # PagerDuty (anomalies only)
+    - name: pagerduty
+      url: ${PAGERDUTY_WEBHOOK_URL}
+      events: [anomaly]
+
+    # Internal API
+    - name: internal-monitoring
+      url: ${INTERNAL_WEBHOOK_URL}
+      events: [anomaly, warning, recovery, info]
+
+retention:
+  days: 30          # Keep snapshots for 30 days
+  min_snapshots: 10 # But always keep at least 10 per source
+
+baseline:
+  window_size: 20   # Use last 20 snapshots for baseline
+  max_age_days: 30  # Ignore snapshots older than 30 days

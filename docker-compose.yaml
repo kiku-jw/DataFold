@@ -1,0 +1,38 @@
+version: "3.8"
+
+services:
+  datafold:
+    build: .
+    container_name: datafold-agent
+    command: run
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - SLACK_WEBHOOK_URL=${SLACK_WEBHOOK_URL}
+      - WEBHOOK_SECRET=${WEBHOOK_SECRET}
+    volumes:
+      - ./datafold.yaml:/app/datafold.yaml:ro
+      - datafold-data:/app/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "datafold", "status"]
+      interval: 60s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  datafold-check:
+    build: .
+    container_name: datafold-check
+    command: check --force
+    profiles:
+      - oneshot
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - SLACK_WEBHOOK_URL=${SLACK_WEBHOOK_URL}
+      - WEBHOOK_SECRET=${WEBHOOK_SECRET}
+    volumes:
+      - ./datafold.yaml:/app/datafold.yaml:ro
+      - datafold-data:/app/data
+
+volumes:
+  datafold-data:
