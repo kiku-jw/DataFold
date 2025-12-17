@@ -101,10 +101,18 @@ def run_check(
             if decision.status in (DecisionStatus.ANOMALY, DecisionStatus.WARNING):
                 has_anomaly = True
 
+            # Serialize metrics with datetime handling
+            serialized_metrics = {}
+            for k, v in snapshot.metrics.items():
+                if isinstance(v, datetime):
+                    serialized_metrics[k] = v.isoformat()
+                else:
+                    serialized_metrics[k] = v
+
             results.append({
                 "source": source.name,
                 "status": decision.status.value,
-                "metrics": snapshot.metrics,
+                "metrics": serialized_metrics,
                 "reasons": [r.to_dict() for r in decision.reasons],
                 "alerts": alert_results,
                 "duration_ms": snapshot.metadata.get("duration_ms"),

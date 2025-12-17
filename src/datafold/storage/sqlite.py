@@ -8,7 +8,7 @@ from collections.abc import Iterator
 from contextlib import contextmanager
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from datafold.models import AlertState, CollectStatus, DataSnapshot, DecisionStatus
 from datafold.storage.base import StateStore
@@ -96,6 +96,12 @@ class SQLiteStateStore(StateStore):
         self._conn.execute("PRAGMA foreign_keys=ON")
         self.migrate()
 
+    def _json_serializer(self, obj: Any) -> str:
+        """JSON serializer for objects not serializable by default."""
+        if isinstance(obj, datetime):
+            return obj.isoformat()
+        raise TypeError(f"Object of type {type(obj).__name__} is not JSON serializable")
+
     def migrate(self) -> None:
         """Apply schema migrations."""
         with self._connection() as conn:
@@ -155,8 +161,8 @@ class SQLiteStateStore(StateStore):
                     snapshot.collect_status.value,
                     snapshot.row_count,
                     snapshot.latest_timestamp.isoformat() if snapshot.latest_timestamp else None,
-                    json.dumps(snapshot.metrics),
-                    json.dumps(snapshot.metadata),
+                    json.dumps(snapshot.metrics, default=self._json_serializer),
+                    json.dumps(snapshot.metadata, default=self._json_serializer),
                     snapshot.metadata.get("duration_ms"),
                     snapshot.metadata.get("error_code"),
                     snapshot.metadata.get("error_message"),

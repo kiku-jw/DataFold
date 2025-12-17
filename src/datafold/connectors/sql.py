@@ -138,6 +138,11 @@ class SQLConnector(Connector):
         driver = DIALECT_DRIVERS[dialect]
 
         if "://" not in connection:
+            if dialect == "sqlite":
+                # SQLite needs sqlite:/// for relative, sqlite://// for absolute
+                if connection.startswith("/"):
+                    return f"{driver}:///{connection}"
+                return f"{driver}:///{connection}"
             return f"{driver}://{connection}"
 
         return connection.replace(f"{parsed.scheme}://", f"{driver}://")

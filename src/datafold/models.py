@@ -172,6 +172,13 @@ class WebhookPayload:
     baseline_summary: dict[str, Any] = field(default_factory=dict)
     agent_id: str = ""
 
+    @staticmethod
+    def _serialize_value(obj: Any) -> Any:
+        """Serialize a value for JSON, handling datetime objects."""
+        if isinstance(obj, datetime):
+            return obj.isoformat()
+        raise TypeError(f"Object of type {type(obj).__name__} is not JSON serializable")
+
     def to_canonical_json(self) -> str:
         data = {
             "version": self.version,
@@ -189,7 +196,7 @@ class WebhookPayload:
                 "agent_id": self.agent_id,
             },
         }
-        return json.dumps(data, sort_keys=True, separators=(",", ":"))
+        return json.dumps(data, sort_keys=True, separators=(",", ":"), default=self._serialize_value)
 
     def to_dict(self) -> dict[str, Any]:
         result: dict[str, Any] = json.loads(self.to_canonical_json())

@@ -8,11 +8,11 @@ from datetime import datetime, timedelta, timezone
 from typing import TYPE_CHECKING
 
 from datafold.alerting.webhook import WebhookDelivery
-from datafold.config import resolve_env_vars
+from datafold.config import WebhookConfig, resolve_env_vars
 from datafold.models import AlertState, DecisionStatus, EventType
 
 if TYPE_CHECKING:
-    from datafold.config import AlertingConfig, SourceConfig, WebhookConfig
+    from datafold.config import AlertingConfig, SourceConfig
     from datafold.models import Decision
     from datafold.storage.base import StateStore
 
