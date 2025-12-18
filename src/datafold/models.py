@@ -58,6 +58,10 @@ class DataSnapshot:
         return None
 
     @property
+    def schema(self) -> list[dict[str, str]] | None:
+        return self.metadata.get("schema")
+
+    @property
     def is_success(self) -> bool:
         return self.collect_status == CollectStatus.SUCCESS
 

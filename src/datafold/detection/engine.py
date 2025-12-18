@@ -57,6 +57,9 @@ class DetectionEngine:
         volume_reasons = self._check_volume(current, source_config, baseline)
         reasons.extend(volume_reasons)
 
+        schema_reasons = self._check_schema_drift(current, history, source_config)
+        reasons.extend(schema_reasons)
+
         status = self._determine_status(reasons)
 
         return Decision(
@@ -224,6 +227,61 @@ class DetectionEngine:
 
         return reasons
 
+    def _check_schema_drift(
+        self,
+        current: DataSnapshot,
+        history: list[DataSnapshot],
+        config: SourceConfig,
+    ) -> list[Reason]:
+        """Check for schema drift anomalies."""
+        reasons: list[Reason] = []
+
+        if not config.schema_drift:
+            return reasons
+
+        current_schema = current.schema
+        if not current_schema:
+            return reasons
+
+        # Find last successful snapshot with schema in history
+        last_schema = None
+        for s in reversed(history):
+            if s.collect_status == CollectStatus.SUCCESS and s.schema:
+                last_schema = s.schema
+                break
+
+        if not last_schema:
+            return reasons
+
+        if current_schema != last_schema:
+            # Simple check: column names and types
+            current_cols = {c["name"]: c["type"] for c in current_schema}
+            last_cols = {c["name"]: c["type"] for c in last_schema}
+
+            added = set(current_cols.keys()) - set(last_cols.keys())
+            removed = set(last_cols.keys()) - set(current_cols.keys())
+            changed = {
+                k for k in current_cols.keys() & last_cols.keys()
+                if current_cols[k] != last_cols[k]
+            }
+
+            msgs = []
+            if added:
+                msgs.append(f"added: {', '.join(sorted(added))}")
+            if removed:
+                msgs.append(f"removed: {', '.join(sorted(removed))}")
+            if changed:
+                msgs.append(f"changed: {', '.join(sorted(changed))}")
+
+            reasons.append(
+                Reason(
+                    code="SCHEMA_DRIFT",
+                    message=f"Schema changed ({'; '.join(msgs)})",
+                )
+            )
+
+        return reasons
+
     def _determine_status(self, reasons: list[Reason]) -> DecisionStatus:
         """Determine overall status from reasons."""
         if not reasons:
@@ -234,6 +292,7 @@ class DetectionEngine:
             "ZERO_VOLUME",
             "BELOW_MIN_VOLUME",
             "STALE_DATA",
+            "SCHEMA_DRIFT",
         }
 
         for reason in reasons:

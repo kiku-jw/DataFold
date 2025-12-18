@@ -156,3 +156,77 @@ class TestBaselineCalculation:
 
         confidences = [d.confidence for d in decisions]
         assert confidences == sorted(confidences)
+
+
+class TestSchemaDrift:
+    def test_no_drift_when_schema_identical(self, engine, source_config):
+        schema = [{"name": "row_count", "type": "int"}, {"name": "latest_timestamp", "type": "datetime"}]
+        history = [make_snapshot(1000)]
+        history[0].metadata["schema"] = schema
+
+        current = make_snapshot(1000)
+        current.metadata["schema"] = schema
+
+        decision = engine.analyze(current, history, source_config)
+        assert decision.status == DecisionStatus.OK
+        assert not any(r.code == "SCHEMA_DRIFT" for r in decision.reasons)
+
+    def test_drift_when_column_added(self, engine, source_config):
+        last_schema = [{"name": "row_count", "type": "int"}]
+        current_schema = [{"name": "row_count", "type": "int"}, {"name": "new_col", "type": "str"}]
+
+        history = [make_snapshot(1000)]
+        history[0].metadata["schema"] = last_schema
+
+        current = make_snapshot(1000)
+        current.metadata["schema"] = current_schema
+
+        decision = engine.analyze(current, history, source_config)
+        assert decision.status == DecisionStatus.ANOMALY
+        drift_reason = next(r for r in decision.reasons if r.code == "SCHEMA_DRIFT")
+        assert "added: new_col" in drift_reason.message
+
+    def test_drift_when_column_removed(self, engine, source_config):
+        last_schema = [{"name": "row_count", "type": "int"}, {"name": "old_col", "type": "str"}]
+        current_schema = [{"name": "row_count", "type": "int"}]
+
+        history = [make_snapshot(1000)]
+        history[0].metadata["schema"] = last_schema
+
+        current = make_snapshot(1000)
+        current.metadata["schema"] = current_schema
+
+        decision = engine.analyze(current, history, source_config)
+        assert decision.status == DecisionStatus.ANOMALY
+        drift_reason = next(r for r in decision.reasons if r.code == "SCHEMA_DRIFT")
+        assert "removed: old_col" in drift_reason.message
+
+    def test_drift_when_type_changed(self, engine, source_config):
+        last_schema = [{"name": "count", "type": "int"}]
+        current_schema = [{"name": "count", "type": "float"}]
+
+        history = [make_snapshot(1000)]
+        history[0].metadata["schema"] = last_schema
+
+        current = make_snapshot(1000)
+        current.metadata["schema"] = current_schema
+
+        decision = engine.analyze(current, history, source_config)
+        assert decision.status == DecisionStatus.ANOMALY
+        drift_reason = next(r for r in decision.reasons if r.code == "SCHEMA_DRIFT")
+        assert "changed: count" in drift_reason.message
+
+    def test_no_drift_when_disabled(self, engine, source_config):
+        source_config.schema_drift = False
+        last_schema = [{"name": "row_count", "type": "int"}]
+        current_schema = [{"name": "row_count", "type": "int"}, {"name": "new_col", "type": "str"}]
+
+        history = [make_snapshot(1000)]
+        history[0].metadata["schema"] = last_schema
+
+        current = make_snapshot(1000)
+        current.metadata["schema"] = current_schema
+
+        decision = engine.analyze(current, history, source_config)
+        assert decision.status == DecisionStatus.OK
+        assert not any(r.code == "SCHEMA_DRIFT" for r in decision.reasons)

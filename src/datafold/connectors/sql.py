@@ -59,6 +59,7 @@ class SQLConnector(Connector):
                 row_dict = dict(zip(columns, row, strict=False))
 
                 metrics = self._extract_metrics(row_dict, config)
+                schema = [{"name": k, "type": str(type(v).__name__)} for k, v in row_dict.items()]
 
             duration_ms = int((time.time() - start_time) * 1000)
 
@@ -71,6 +72,7 @@ class SQLConnector(Connector):
                     "duration_ms": duration_ms,
                     "connector_type": "sql",
                     "dialect": config.dialect,
+                    "schema": schema,
                 },
             )
 

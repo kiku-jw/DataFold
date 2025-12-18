@@ -22,6 +22,7 @@ Data can be **syntactically valid but semantically dead**. Your ETL job succeede
 - **Freshness Detection** — Alerts when data stops updating
 - **Volume Monitoring** — Catches unexpected spikes and drops
 - **Baseline Learning** — No manual thresholds, learns from your data
+- **Schema Drift Detection** — Watches for column name or type changes
 - **Webhook Alerts** — Slack, PagerDuty, or any HTTP endpoint
 - **Zero UI Required** — CLI-first, DevOps-friendly
 - **Lightweight** — Single binary, SQLite storage, no dependencies
@@ -132,6 +133,7 @@ sources:
     volume:
       min_row_count: 100        # Hard minimum (optional)
       deviation_factor: 3.0     # Stddev multiplier
+    schema_drift: true          # Alert on column changes (optional, default: true)
 ```
 
 ### Webhook Payload

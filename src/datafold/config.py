@@ -55,6 +55,7 @@ class SourceConfig(BaseModel):
     schedule: str = "*/15 * * * *"
     freshness: FreshnessConfig = Field(default_factory=FreshnessConfig)
     volume: VolumeConfig = Field(default_factory=VolumeConfig)
+    schema_drift: bool = True
     enabled: bool = True
 
     @field_validator("connection")
