@@ -124,6 +124,35 @@ Then threshold = 100 × 3.0 = 300 rows deviation allowed.
 | 50 | ANOMALY | Below min_row_count (100) |
 | 0 | ANOMALY | Zero rows |
 
+### 4. Schema Drift Detection
+
+Monitors your data source for changes in schema (column names or types).
+
+**Inputs:**
+- `metadata.schema` from current collection
+- Historical schema from the last successful snapshot
+- `schema_drift` (boolean) from config (default: `true`)
+
+**Logic:**
+
+```python
+if current_schema != last_schema:
+    return ANOMALY, "Schema changed (removed: column_a; changed: column_b)"
+```
+
+**What is monitored:**
+- **Added columns**: New columns in the query result
+- **Removed columns**: Missing columns that were previously present
+- **Type changes**: Columns whose data type changed (e.g., `int` → `float`)
+
+**Example:**
+
+```yaml
+sources:
+  - name: orders
+    schema_drift: true  # Default, can be disabled
+```
+
 ## Baseline Calculation
 
 The baseline is calculated from historical successful snapshots.
