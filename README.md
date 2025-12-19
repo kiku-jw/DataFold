@@ -4,7 +4,7 @@
 
 [![CI](https://github.com/datafold/agent/actions/workflows/ci.yaml/badge.svg)](https://github.com/datafold/agent/actions/workflows/ci.yaml)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL--3.0-blue.svg)](https://opensource.org/licenses/MIT)
 
 ## Why DataFold?
 
@@ -233,4 +233,4 @@ mypy src
 
 ## License
 
-MIT License. See [LICENSE](LICENSE) for details.
+AGPL-3.0. Copyright (c) 2025 KikuAI Lab
