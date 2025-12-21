@@ -8,7 +8,8 @@ DataFold looks for configuration in this order:
 1. `--config` CLI argument
 2. `./datafold.yaml`
 3. `./datafold.yml`
-4. `~/.datafold/config.yaml`
+4. `~/.config/datafold/datafold.yaml`
+5. `/etc/datafold/datafold.yaml`
 
 ## Full Schema
 

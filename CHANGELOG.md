@@ -5,7 +5,7 @@ All notable changes to DataFold Agent will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.1.0] - 2024-12-18
+## [0.1.0] - 2025-01-15
 
 ### Added
 
@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - SQL connector supporting PostgreSQL, MySQL, ClickHouse, and SQLite
   - Freshness detection with configurable `max_age_hours` and baseline factor
   - Volume detection with `min_row_count` and statistical deviation thresholds
+  - Schema drift detection for column additions, removals, and type changes
   - Behavioral baseline learning from historical snapshots
   - SQLite state storage with migrations and retention policies
 
@@ -61,7 +62,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Planned for 0.2.0
 
-- Schema drift detection
 - Prometheus metrics endpoint
 - PostgreSQL storage backend (for multi-agent setups)
 - BigQuery connector

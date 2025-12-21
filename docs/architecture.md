@@ -46,8 +46,8 @@ Internal design and component overview.
      │                 │      │   (SQLite)      │
      │ - postgres      │      │                 │
      │ - mysql         │      │ - snapshots     │
-     │ - clickhouse    │      │ - alert_states  │
-     │ - sqlite        │      │ - delivery_log  │
+     │ - clickhouse    │      │ - alert_state   │
+     │ - sqlite        │      │ - deliveries    │
      └────────┬────────┘      └────────┬────────┘
               │                        │
               │   ┌────────────────────┘
@@ -270,30 +270,30 @@ CREATE TABLE snapshots (
 );
 
 -- Alert state (per source + target)
-CREATE TABLE alert_states (
-    id INTEGER PRIMARY KEY,
+CREATE TABLE alert_state (
     source_name TEXT NOT NULL,
     target_name TEXT NOT NULL,
-    notified_status TEXT,
-    notified_reason_hash TEXT,
-    last_change_at TEXT,
+    notified_status TEXT NOT NULL,
+    notified_reason_hash TEXT NOT NULL,
+    last_change_at TEXT NOT NULL,
     last_sent_at TEXT,
     cooldown_until TEXT,
-    UNIQUE(source_name, target_name)
+    PRIMARY KEY (source_name, target_name)
 );
 
 -- Delivery log
-CREATE TABLE delivery_log (
-    id INTEGER PRIMARY KEY,
+CREATE TABLE deliveries (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
     source_name TEXT NOT NULL,
     target_name TEXT NOT NULL,
     event_type TEXT NOT NULL,
-    payload_hash TEXT,
-    delivered_at TEXT NOT NULL,
+    payload_hash TEXT NOT NULL,
+    sent_at TEXT NOT NULL,
     success INTEGER NOT NULL,
     status_code INTEGER,
     latency_ms INTEGER,
-    error_message TEXT
+    error_message TEXT,
+    attempts INTEGER NOT NULL DEFAULT 1
 );
 
 -- Schema metadata

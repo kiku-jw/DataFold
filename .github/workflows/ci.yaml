@@ -33,7 +33,22 @@ jobs:
         run: mypy src
 
       - name: Run tests
-        run: pytest --cov=src/datafold --cov-report=xml
+        run: pytest --cov=src/datafold --cov-report=xml --cov-fail-under=80
+
+      - name: Check documentation consistency
+        run: python scripts/check-docs.py
+
+      - name: Validate CHANGELOG
+        run: |
+          if ! grep -q "^## \[" CHANGELOG.md; then
+            echo "CHANGELOG.md must contain version headers"
+            exit 1
+          fi
+          if ! grep -q "^## \[Unreleased\]" CHANGELOG.md; then
+            echo "CHANGELOG.md must contain [Unreleased] section"
+            exit 1
+          fi
+          echo "CHANGELOG.md is valid"
 
       - name: Upload coverage
         uses: codecov/codecov-action@v4
