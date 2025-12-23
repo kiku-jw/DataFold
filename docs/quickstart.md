@@ -1,6 +1,6 @@
 # Quick Start
 
-Get DataFold running in 5 minutes.
+Get DriftGuard running in 5 minutes.
 
 ## Installation
 
@@ -8,32 +8,32 @@ Get DataFold running in 5 minutes.
 
 ```bash
 # Basic installation
-pip install datafold-agent
+pip install driftguard-agent
 
 # With PostgreSQL support
-pip install "datafold-agent[postgres]"
+pip install "driftguard-agent[postgres]"
 
 # With all database drivers
-pip install "datafold-agent[all]"
+pip install "driftguard-agent[all]"
 ```
 
 ### Using Docker
 
 ```bash
-docker pull ghcr.io/datafold/agent:latest
+docker pull ghcr.io/driftguard/agent:latest
 ```
 
 ## Step 1: Initialize Configuration
 
 ```bash
-datafold init
+driftguard init
 ```
 
-This creates `datafold.yaml` with example configuration.
+This creates `driftguard.yaml` with example configuration.
 
 ## Step 2: Configure Your Data Source
 
-Edit `datafold.yaml`:
+Edit `driftguard.yaml`:
 
 ```yaml
 version: "1"
@@ -43,7 +43,7 @@ agent:
 
 storage:
   backend: sqlite
-  path: ./datafold.db
+  path: ./driftguard.db
 
 sources:
   - name: orders
@@ -79,7 +79,7 @@ export SLACK_WEBHOOK_URL="https://hooks.slack.com/services/..."
 ## Step 4: Validate Configuration
 
 ```bash
-datafold validate
+driftguard validate
 ```
 
 Expected output:
@@ -92,7 +92,7 @@ Expected output:
 ## Step 5: Run First Check
 
 ```bash
-datafold check --force
+driftguard check --force
 ```
 
 The `--force` flag runs immediately regardless of schedule.
@@ -114,24 +114,24 @@ Summary: 1 OK, 0 ANOMALY
 For continuous monitoring:
 
 ```bash
-datafold run
+driftguard run
 ```
 
 Or with Docker:
 
 ```bash
 docker run -d \
-  -v $(pwd)/datafold.yaml:/app/datafold.yaml:ro \
-  -v datafold-data:/app/data \
+  -v $(pwd)/driftguard.yaml:/app/driftguard.yaml:ro \
+  -v driftguard-data:/app/data \
   -e DATABASE_URL="$DATABASE_URL" \
   -e SLACK_WEBHOOK_URL="$SLACK_WEBHOOK_URL" \
-  ghcr.io/datafold/agent:latest run
+  ghcr.io/driftguard/agent:latest run
 ```
 
 ## Step 7: View Status
 
 ```bash
-datafold status
+driftguard status
 ```
 
 ```

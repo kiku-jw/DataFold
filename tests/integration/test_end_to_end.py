@@ -4,27 +4,27 @@ from datetime import datetime, timedelta, timezone
 
 import pytest
 
-from datafold.alerting import AlertingPipeline
-from datafold.config import (
+from driftguard.alerting import AlertingPipeline
+from driftguard.config import (
     AlertingConfig,
     BaselineConfig,
-    DataFoldConfig,
+    DriftGuardConfig,
     FreshnessConfig,
     SourceConfig,
     StorageConfig,
     VolumeConfig,
     WebhookConfig,
 )
-from datafold.detection import DetectionEngine
-from datafold.models import CollectStatus, DataSnapshot, DecisionStatus
-from datafold.storage import SQLiteStateStore
+from driftguard.detection import DetectionEngine
+from driftguard.models import CollectStatus, DataSnapshot, DecisionStatus
+from driftguard.storage import SQLiteStateStore
 
 
 @pytest.fixture
 def config(tmp_path, monkeypatch):
     """Create test configuration."""
     monkeypatch.setenv("TEST_DB_URL", "sqlite:///test.db")
-    return DataFoldConfig(
+    return DriftGuardConfig(
         version="1",
         storage=StorageConfig(
             backend="sqlite",
@@ -142,7 +142,7 @@ class TestEndToEnd:
             dry_run=True,
         )
 
-        from datafold.models import Decision, Reason
+        from driftguard.models import Decision, Reason
 
         decision = Decision(
             status=DecisionStatus.ANOMALY,

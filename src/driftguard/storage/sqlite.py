@@ -10,11 +10,11 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
-from datafold.models import AlertState, CollectStatus, DataSnapshot, DecisionStatus
-from datafold.storage.base import StateStore
+from driftguard.models import AlertState, CollectStatus, DataSnapshot, DecisionStatus
+from driftguard.storage.base import StateStore
 
 if TYPE_CHECKING:
-    from datafold.models import DeliveryResult
+    from driftguard.models import DeliveryResult
 
 SCHEMA_VERSION = 1
 

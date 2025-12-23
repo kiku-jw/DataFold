@@ -78,7 +78,7 @@ All webhooks receive JSON payloads:
     "expected_interval_seconds": 21600
   },
   "context": {
-    "agent_id": "prod-datafold-agent"
+    "agent_id": "prod-driftguard-agent"
   }
 }
 ```
@@ -119,9 +119,9 @@ When `secret` is configured, payloads are signed:
 ```http
 POST /webhook HTTP/1.1
 Content-Type: application/json
-X-DataFold-Signature: sha256=abc123...
-X-DataFold-Event: anomaly
-X-DataFold-Source: orders_daily
+X-DriftGuard-Signature: sha256=abc123...
+X-DriftGuard-Event: anomaly
+X-DriftGuard-Source: orders_daily
 ```
 
 ### Signature Verification
@@ -143,7 +143,7 @@ def verify_signature(payload: bytes, signature: str, secret: str) -> bool:
 
 # Usage
 raw_body = request.data  # Raw bytes
-signature = request.headers.get("X-DataFold-Signature")
+signature = request.headers.get("X-DriftGuard-Signature")
 secret = os.environ["WEBHOOK_SECRET"]
 
 if not verify_signature(raw_body, signature, secret):
@@ -184,12 +184,12 @@ webhooks:
 
 ### Custom Slack Formatting
 
-DataFold sends raw JSON. For formatted Slack messages, use a middleware:
+DriftGuard sends raw JSON. For formatted Slack messages, use a middleware:
 
 ```python
 # Example: Flask middleware that converts to Slack format
-@app.route('/datafold-to-slack', methods=['POST'])
-def datafold_to_slack():
+@app.route('/driftguard-to-slack', methods=['POST'])
+def driftguard_to_slack():
     data = request.json
     
     color = {
@@ -201,7 +201,7 @@ def datafold_to_slack():
     slack_payload = {
         "attachments": [{
             "color": color,
-            "title": f"DataFold: {data['source']['name']}",
+            "title": f"DriftGuard: {data['source']['name']}",
             "text": f"Status: {data['decision']['status']}",
             "fields": [
                 {"title": "Row Count", "value": data['metrics']['row_count'], "short": True},
@@ -230,8 +230,8 @@ webhooks:
 Use a middleware to convert to PagerDuty format:
 
 ```python
-@app.route('/datafold-to-pagerduty', methods=['POST'])
-def datafold_to_pagerduty():
+@app.route('/driftguard-to-pagerduty', methods=['POST'])
+def driftguard_to_pagerduty():
     data = request.json
     
     if data['event_type'] == 'recovery':
@@ -242,9 +242,9 @@ def datafold_to_pagerduty():
     pd_payload = {
         "routing_key": os.environ['PAGERDUTY_ROUTING_KEY'],
         "event_action": event_action,
-        "dedup_key": f"datafold-{data['source']['name']}",
+        "dedup_key": f"driftguard-{data['source']['name']}",
         "payload": {
-            "summary": f"DataFold: {data['decision']['status']} on {data['source']['name']}",
+            "summary": f"DriftGuard: {data['decision']['status']} on {data['source']['name']}",
             "severity": "critical" if data['event_type'] == 'anomaly' else "warning",
             "source": data['context']['agent_id'],
             "custom_details": {
@@ -280,7 +280,7 @@ Failed deliveries are logged in SQLite:
 
 ```bash
 # Query delivery history (advanced)
-sqlite3 datafold.db "SELECT * FROM delivery_log WHERE success = 0"
+sqlite3 driftguard.db "SELECT * FROM delivery_log WHERE success = 0"
 ```
 
 ## Deduplication
@@ -307,10 +307,10 @@ After sending an alert:
 
 ```bash
 # Test all webhooks
-datafold test-webhook
+driftguard test-webhook
 
 # Test specific webhook
-datafold test-webhook --target slack
+driftguard test-webhook --target slack
 ```
 
 Test payloads use `event_type: info` and are always sent (ignore cooldown).
@@ -326,12 +326,12 @@ Test payloads use `event_type: info` and are always sent (ignore cooldown).
 
 2. Check cooldown:
    ```bash
-   datafold status  # See last alert times
+   driftguard status  # See last alert times
    ```
 
 3. Check delivery logs:
    ```bash
-   sqlite3 datafold.db "SELECT * FROM delivery_log ORDER BY delivered_at DESC LIMIT 10"
+   sqlite3 driftguard.db "SELECT * FROM delivery_log ORDER BY delivered_at DESC LIMIT 10"
    ```
 
 ### Signature Verification Failing

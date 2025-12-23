@@ -14,7 +14,7 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-RUN groupadd -r datafold && useradd -r -g datafold datafold
+RUN groupadd -r driftguard && useradd -r -g driftguard driftguard
 
 COPY --from=builder /app/dist/*.whl /tmp/
 
@@ -22,13 +22,14 @@ RUN pip install --no-cache-dir /tmp/*.whl && rm /tmp/*.whl
 
 RUN pip install --no-cache-dir psycopg2-binary pymysql
 
-RUN mkdir -p /app/data && chown -R datafold:datafold /app
+RUN mkdir -p /app/data && chown -R driftguard:driftguard /app
 
-USER datafold
+USER driftguard
 
 VOLUME ["/app/data"]
 
-ENV DATAFOLD_STORAGE_PATH=/app/data/datafold.db
+ENV DRIFTGUARD_STORAGE_PATH=/app/data/driftguard.db
 
-ENTRYPOINT ["datafold"]
+ENTRYPOINT ["driftguard"]
 CMD ["run"]
+

@@ -1,12 +1,12 @@
-# DataFold Agent
+# DriftGuard Agent
 
 **Automated data quality & drift detection.** Watches incoming data streams, detects anomalies, unexpected spikes, missing values, and schema drift. Ideal for marketplaces, analytics dashboards, financial data, and event pipelines.
 
-[![CI](https://github.com/datafold/agent/actions/workflows/ci.yaml/badge.svg)](https://github.com/datafold/agent/actions/workflows/ci.yaml)
+[![CI](https://github.com/driftguard/agent/actions/workflows/ci.yaml/badge.svg)](https://github.com/driftguard/agent/actions/workflows/ci.yaml)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL--3.0-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
 
-## Why DataFold?
+## Why DriftGuard?
 
 Data can be **syntactically valid but semantically dead**. Your ETL job succeeded, Airflow is green, but:
 
@@ -15,7 +15,7 @@ Data can be **syntactically valid but semantically dead**. Your ETL job succeede
 - A critical column is now 30% NULL
 - The upstream changed their schema silently
 
-**DataFold catches these silent failures before your business does.**
+**DriftGuard catches these silent failures before your business does.**
 
 ## Features
 
@@ -32,22 +32,22 @@ Data can be **syntactically valid but semantically dead**. Your ETL job succeede
 ### Installation
 
 ```bash
-pip install datafold-agent
+pip install driftguard-agent
 
 # With database drivers
-pip install "datafold-agent[postgres]"
-pip install "datafold-agent[all]"  # postgres, mysql, clickhouse
+pip install "driftguard-agent[postgres]"
+pip install "driftguard-agent[all]"  # postgres, mysql, clickhouse
 ```
 
 ### Initialize
 
 ```bash
-datafold init
+driftguard init
 ```
 
 ### Configure
 
-Edit `datafold.yaml`:
+Edit `driftguard.yaml`:
 
 ```yaml
 version: "1"
@@ -80,28 +80,28 @@ alerting:
 
 ```bash
 # Single check
-datafold check
+driftguard check
 
 # Daemon mode
-datafold run
+driftguard run
 
 # Check specific source
-datafold check --source orders_daily
+driftguard check --source orders_daily
 ```
 
 ## CLI Commands
 
 | Command | Description |
 |---------|-------------|
-| `datafold init` | Create config file |
-| `datafold validate` | Validate configuration |
-| `datafold check` | Run checks on all sources |
-| `datafold run` | Start daemon with scheduler |
-| `datafold status` | Show current status |
-| `datafold history <source>` | Show snapshot history |
-| `datafold explain --source X` | Explain baseline and thresholds |
-| `datafold test-webhook` | Send test payload |
-| `datafold purge` | Clean old snapshots |
+| `driftguard init` | Create config file |
+| `driftguard validate` | Validate configuration |
+| `driftguard check` | Run checks on all sources |
+| `driftguard run` | Start daemon with scheduler |
+| `driftguard status` | Show current status |
+| `driftguard history <source>` | Show snapshot history |
+| `driftguard explain --source X` | Explain baseline and thresholds |
+| `driftguard test-webhook` | Send test payload |
+| `driftguard purge` | Clean old snapshots |
 
 ## Configuration
 
@@ -164,25 +164,25 @@ sources:
 ## Docker
 
 ```bash
-docker run -v ./datafold.yaml:/app/datafold.yaml \
+docker run -v ./driftguard.yaml:/app/driftguard.yaml \
   -e DATABASE_URL="..." \
   -e SLACK_WEBHOOK_URL="..." \
-  ghcr.io/datafold/agent:latest run
+  ghcr.io/driftguard/agent:latest run
 ```
 
 ### Docker Compose
 
 ```yaml
 services:
-  datafold:
-    image: ghcr.io/datafold/agent:latest
+  driftguard:
+    image: ghcr.io/driftguard/agent:latest
     command: run
     environment:
       - DATABASE_URL=${DATABASE_URL}
       - SLACK_WEBHOOK_URL=${SLACK_WEBHOOK_URL}
     volumes:
-      - ./datafold.yaml:/app/datafold.yaml:ro
-      - datafold-data:/app/data
+      - ./driftguard.yaml:/app/driftguard.yaml:ro
+      - driftguard-data:/app/data
 ```
 
 ## Kubernetes
@@ -191,7 +191,7 @@ services:
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: datafold-check
+  name: driftguard-check
 spec:
   schedule: "*/15 * * * *"
   jobTemplate:
@@ -199,12 +199,12 @@ spec:
       template:
         spec:
           containers:
-            - name: datafold
-              image: ghcr.io/datafold/agent:latest
-              command: ["datafold", "check"]
+            - name: driftguard
+              image: ghcr.io/driftguard/agent:latest
+              command: ["driftguard", "check"]
               envFrom:
                 - secretRef:
-                    name: datafold-secrets
+                    name: driftguard-secrets
 ```
 
 ## Exit Codes

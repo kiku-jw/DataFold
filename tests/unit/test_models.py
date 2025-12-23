@@ -2,7 +2,7 @@
 
 from datetime import datetime, timedelta, timezone
 
-from datafold.models import (
+from driftguard.models import (
     AlertState,
     CollectStatus,
     DataSnapshot,

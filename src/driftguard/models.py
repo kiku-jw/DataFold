@@ -1,4 +1,4 @@
-"""Core data models for DataFold Agent."""
+"""Core data models for DriftGuard Agent."""
 
 from __future__ import annotations
 

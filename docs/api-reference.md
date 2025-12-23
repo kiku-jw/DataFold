@@ -1,24 +1,24 @@
 # API Reference
 
-Python API for extending DataFold.
+Python API for extending DriftGuard.
 
 ## Installation
 
 ```bash
-pip install datafold-agent
+pip install driftguard-agent
 ```
 
 ## Quick Example
 
 ```python
 from pathlib import Path
-from datafold.config import load_config
-from datafold.storage.sqlite import SQLiteStateStore
-from datafold.connectors.sql import SQLConnector
-from datafold.detection.engine import DetectionEngine
+from driftguard.config import load_config
+from driftguard.storage.sqlite import SQLiteStateStore
+from driftguard.connectors.sql import SQLConnector
+from driftguard.detection.engine import DetectionEngine
 
 # Load config
-config = load_config(Path("datafold.yaml"))
+config = load_config(Path("driftguard.yaml"))
 
 # Initialize storage
 store = SQLiteStateStore(config.storage.path)
@@ -48,24 +48,24 @@ store.close()
 ### load_config
 
 ```python
-from datafold.config import load_config, DataFoldConfig
+from driftguard.config import load_config, DriftGuardConfig
 
-def load_config(path: Path) -> DataFoldConfig:
+def load_config(path: Path) -> DriftGuardConfig:
     """Load and validate configuration from YAML file."""
 ```
 
 **Parameters:**
 - `path`: Path to YAML config file
 
-**Returns:** `DataFoldConfig` object
+**Returns:** `DriftGuardConfig` object
 
 **Raises:** `ConfigError` if invalid
 
-### DataFoldConfig
+### DriftGuardConfig
 
 ```python
 @dataclass
-class DataFoldConfig:
+class DriftGuardConfig:
     version: str
     agent: AgentConfig
     storage: StorageConfig
@@ -95,7 +95,7 @@ class SourceConfig:
 ### Environment Variable Resolution
 
 ```python
-from datafold.config import resolve_env_vars
+from driftguard.config import resolve_env_vars
 
 # Resolves ${VAR} patterns
 url = resolve_env_vars("postgresql://${DB_USER}:${DB_PASS}@host/db")
@@ -106,7 +106,7 @@ url = resolve_env_vars("postgresql://${DB_USER}:${DB_PASS}@host/db")
 ### DataSnapshot
 
 ```python
-from datafold.models import DataSnapshot, CollectStatus
+from driftguard.models import DataSnapshot, CollectStatus
 
 snapshot = DataSnapshot(
     source_name="orders",
@@ -122,7 +122,7 @@ snapshot = DataSnapshot(
 ### Decision
 
 ```python
-from datafold.models import Decision, DecisionStatus, Reason
+from driftguard.models import Decision, DecisionStatus, Reason
 
 decision = Decision(
     status=DecisionStatus.OK,
@@ -141,7 +141,7 @@ if decision.status == DecisionStatus.ANOMALY:
 ### DecisionStatus
 
 ```python
-from datafold.models import DecisionStatus
+from driftguard.models import DecisionStatus
 
 DecisionStatus.OK       # All checks passed
 DecisionStatus.WARNING  # Deviation detected
@@ -152,7 +152,7 @@ DecisionStatus.UNKNOWN  # Not yet determined
 ### Reason
 
 ```python
-from datafold.models import Reason
+from driftguard.models import Reason
 
 reason = Reason(
     code="VOLUME_BELOW_MINIMUM",
@@ -165,7 +165,7 @@ reason = Reason(
 ### AlertState
 
 ```python
-from datafold.models import AlertState
+from driftguard.models import AlertState
 
 state = AlertState(
     source_name="orders",
@@ -185,7 +185,7 @@ if state.should_alert(new_decision, cooldown_minutes=60):
 ### WebhookPayload
 
 ```python
-from datafold.models import WebhookPayload, EventType
+from driftguard.models import WebhookPayload, EventType
 
 payload = WebhookPayload(
     event_type=EventType.ANOMALY,
@@ -209,8 +209,8 @@ data = payload.to_dict()
 ### SQLConnector
 
 ```python
-from datafold.connectors.sql import SQLConnector
-from datafold.config import SourceConfig
+from driftguard.connectors.sql import SQLConnector
+from driftguard.config import SourceConfig
 
 connector = SQLConnector(timeout_seconds=30)
 
@@ -229,8 +229,8 @@ except QueryError as e:
 ### Custom Connector
 
 ```python
-from datafold.connectors.base import Connector
-from datafold.models import DataSnapshot
+from driftguard.connectors.base import Connector
+from driftguard.models import DataSnapshot
 
 class MyConnector(Connector):
     """Custom connector implementation."""
@@ -269,8 +269,8 @@ class MyConnector(Connector):
 ### DetectionEngine
 
 ```python
-from datafold.detection.engine import DetectionEngine
-from datafold.config import BaselineConfig
+from driftguard.detection.engine import DetectionEngine
+from driftguard.config import BaselineConfig
 
 engine = DetectionEngine(BaselineConfig(
     window_size=20,
@@ -292,7 +292,7 @@ print(f"Baseline: {decision.baseline_summary}")
 ### BaselineSummary
 
 ```python
-from datafold.models import BaselineSummary
+from driftguard.models import BaselineSummary
 
 baseline = BaselineSummary(
     snapshot_count=20,
@@ -314,9 +314,9 @@ data = baseline.to_dict()
 ### SQLiteStateStore
 
 ```python
-from datafold.storage.sqlite import SQLiteStateStore
+from driftguard.storage.sqlite import SQLiteStateStore
 
-store = SQLiteStateStore("/path/to/datafold.db")
+store = SQLiteStateStore("/path/to/driftguard.db")
 store.init()  # Creates tables if needed
 store.migrate()  # Apply migrations
 
@@ -355,7 +355,7 @@ store.close()
 ### StateStore Interface
 
 ```python
-from datafold.storage.base import StateStore
+from driftguard.storage.base import StateStore
 
 class MyStore(StateStore):
     """Custom storage backend."""
@@ -377,8 +377,8 @@ class MyStore(StateStore):
 ### WebhookDelivery
 
 ```python
-from datafold.alerting.webhook import WebhookDelivery
-from datafold.config import WebhookConfig
+from driftguard.alerting.webhook import WebhookDelivery
+from driftguard.config import WebhookConfig
 
 delivery = WebhookDelivery(max_retries=3)
 
@@ -411,7 +411,7 @@ else:
 ### AlertingPipeline
 
 ```python
-from datafold.alerting.pipeline import AlertingPipeline
+from driftguard.alerting.pipeline import AlertingPipeline
 
 pipeline = AlertingPipeline(
     config=alerting_config,
@@ -431,7 +431,7 @@ results = pipeline.process(source_config, decision)
 
 ```python
 from click.testing import CliRunner
-from datafold.cli.main import cli
+from driftguard.cli.main import cli
 
 runner = CliRunner()
 
@@ -451,9 +451,9 @@ status = json.loads(result.output)
 All public APIs are fully typed:
 
 ```python
-from datafold.models import DataSnapshot, Decision
-from datafold.config import SourceConfig
-from datafold.storage.base import StateStore
+from driftguard.models import DataSnapshot, Decision
+from driftguard.config import SourceConfig
+from driftguard.storage.base import StateStore
 
 def my_function(
     snapshot: DataSnapshot,

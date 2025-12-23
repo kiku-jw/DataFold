@@ -4,9 +4,9 @@ from datetime import datetime, timedelta, timezone
 
 import pytest
 
-from datafold.config import BaselineConfig, FreshnessConfig, SourceConfig, VolumeConfig
-from datafold.detection.engine import DetectionEngine
-from datafold.models import CollectStatus, DataSnapshot, DecisionStatus
+from driftguard.config import BaselineConfig, FreshnessConfig, SourceConfig, VolumeConfig
+from driftguard.detection.engine import DetectionEngine
+from driftguard.models import CollectStatus, DataSnapshot, DecisionStatus
 
 
 @pytest.fixture

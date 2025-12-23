@@ -1,1 +1,1 @@
-"""Integration tests for DataFold Agent."""
+"""Integration tests for DriftGuard Agent."""

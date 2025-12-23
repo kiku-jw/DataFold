@@ -46,7 +46,7 @@ def check_table_names_in_docs() -> list[str]:
     errors = []
 
     # Read actual table names from sqlite.py
-    sqlite_file = REPO_ROOT / "src" / "datafold" / "storage" / "sqlite.py"
+    sqlite_file = REPO_ROOT / "src" / "driftguard" / "storage" / "sqlite.py"
     if not sqlite_file.exists():
         return errors
 
@@ -85,7 +85,7 @@ def check_config_paths() -> list[str]:
     errors = []
 
     # Read actual paths from config.py
-    config_file = REPO_ROOT / "src" / "datafold" / "config.py"
+    config_file = REPO_ROOT / "src" / "driftguard" / "config.py"
     if not config_file.exists():
         return errors
 
@@ -97,10 +97,10 @@ def check_config_paths() -> list[str]:
         content = config_doc.read_text()
 
         # Check for wrong paths
-        if "~/.datafold/config.yaml" in content:
+        if "~/.driftguard/config.yaml" in content:
             errors.append(
-                "docs/configuration.md: Use '~/.config/datafold/datafold.yaml' "
-                "instead of '~/.datafold/config.yaml'"
+                "docs/configuration.md: Use '~/.config/driftguard/driftguard.yaml' "
+                "instead of '~/.driftguard/config.yaml'"
             )
 
     return errors
@@ -124,7 +124,7 @@ def check_version_consistency() -> list[str]:
     expected_version = version_match.group(1)
 
     # Check __init__.py
-    init_file = REPO_ROOT / "src" / "datafold" / "__init__.py"
+    init_file = REPO_ROOT / "src" / "driftguard" / "__init__.py"
     if init_file.exists():
         content = init_file.read_text()
         if f'__version__ = "{expected_version}"' not in content:
@@ -133,7 +133,7 @@ def check_version_consistency() -> list[str]:
                 actual = init_version.group(1)
                 if actual != expected_version:
                     errors.append(
-                        f"src/datafold/__init__.py: Version '{actual}' "
+                        f"src/driftguard/__init__.py: Version '{actual}' "
                         f"doesn't match pyproject.toml '{expected_version}'"
                     )
 

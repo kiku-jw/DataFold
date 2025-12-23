@@ -1,15 +1,15 @@
-# DataFold Agent - Example Configuration
+# DriftGuard Agent - Example Configuration
 # Copy this file to your project and customize
 
 version: "1"
 
 agent:
-  id: my-datafold-agent
+  id: my-driftguard-agent
   log_level: info  # debug, info, warn, error
 
 storage:
   backend: sqlite
-  path: ./datafold.db
+  path: ./driftguard.db
   # For Postgres (multi-agent setups):
   # backend: postgres
   # connection: ${DATAFOLD_DATABASE_URL}

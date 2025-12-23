@@ -1,15 +1,15 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: datafold-config
+  name: driftguard-config
 data:
-  datafold.yaml: |
+  driftguard.yaml: |
     version: "1"
     agent:
-      id: k8s-datafold-agent
+      id: k8s-driftguard-agent
     storage:
       backend: sqlite
-      path: /app/data/datafold.db
+      path: /app/data/driftguard.db
     sources:
       - name: orders_daily
         type: sql
@@ -35,7 +35,7 @@ data:
 apiVersion: v1
 kind: Secret
 metadata:
-  name: datafold-secrets
+  name: driftguard-secrets
 type: Opaque
 stringData:
   DATABASE_URL: "postgresql://user:pass@host:5432/db"
@@ -44,7 +44,7 @@ stringData:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: datafold-state
+  name: driftguard-state
 spec:
   accessModes:
     - ReadWriteOnce
@@ -55,7 +55,7 @@ spec:
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: datafold-check
+  name: driftguard-check
 spec:
   schedule: "*/15 * * * *"
   concurrencyPolicy: Forbid
@@ -68,16 +68,16 @@ spec:
         spec:
           restartPolicy: OnFailure
           containers:
-            - name: datafold
-              image: ghcr.io/datafold/agent:latest
-              command: ["datafold", "check", "--force"]
+            - name: driftguard
+              image: ghcr.io/driftguard/agent:latest
+              command: ["driftguard", "check", "--force"]
               envFrom:
                 - secretRef:
-                    name: datafold-secrets
+                    name: driftguard-secrets
               volumeMounts:
                 - name: config
-                  mountPath: /app/datafold.yaml
-                  subPath: datafold.yaml
+                  mountPath: /app/driftguard.yaml
+                  subPath: driftguard.yaml
                   readOnly: true
                 - name: state
                   mountPath: /app/data
@@ -91,7 +91,7 @@ spec:
           volumes:
             - name: config
               configMap:
-                name: datafold-config
+                name: driftguard-config
             - name: state
               persistentVolumeClaim:
-                claimName: datafold-state
+                claimName: driftguard-state

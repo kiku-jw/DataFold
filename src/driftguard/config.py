@@ -1,4 +1,4 @@
-"""Configuration models and loading for DataFold Agent."""
+"""Configuration models and loading for DriftGuard Agent."""
 
 from __future__ import annotations
 
@@ -17,7 +17,7 @@ CREDENTIALS_PATTERN = re.compile(r"://[^/]+:[^/]+@")
 class AgentConfig(BaseModel):
     """Agent identification and logging configuration."""
 
-    id: str = "datafold-agent"
+    id: str = "driftguard-agent"
     log_level: str = "info"
     log_format: str = "text"
 
@@ -26,7 +26,7 @@ class StorageConfig(BaseModel):
     """State storage configuration."""
 
     backend: str = "sqlite"
-    path: str = "./datafold.db"
+    path: str = "./driftguard.db"
     connection: str | None = None
 
 
@@ -107,8 +107,8 @@ class BaselineConfig(BaseModel):
     max_age_days: int = 30
 
 
-class DataFoldConfig(BaseModel):
-    """Root configuration for DataFold Agent."""
+class DriftGuardConfig(BaseModel):
+    """Root configuration for DriftGuard Agent."""
 
     version: str = "1"
     agent: AgentConfig = Field(default_factory=AgentConfig)
@@ -119,7 +119,7 @@ class DataFoldConfig(BaseModel):
     baseline: BaselineConfig = Field(default_factory=BaselineConfig)
 
     @model_validator(mode="after")
-    def validate_version(self) -> DataFoldConfig:
+    def validate_version(self) -> DriftGuardConfig:
         if self.version != "1":
             raise ValueError(f"Unsupported config version: {self.version}. Expected: 1")
         return self
@@ -138,7 +138,7 @@ def resolve_env_vars(value: str) -> str:
     return ENV_VAR_PATTERN.sub(replace, value)
 
 
-def resolve_config_env_vars(config: DataFoldConfig) -> DataFoldConfig:
+def resolve_config_env_vars(config: DriftGuardConfig) -> DriftGuardConfig:
     """Resolve all environment variables in config."""
     data = config.model_dump()
 
@@ -152,7 +152,7 @@ def resolve_config_env_vars(config: DataFoldConfig) -> DataFoldConfig:
         return obj
 
     resolved_data = resolve_recursive(data)
-    return DataFoldConfig.model_validate(resolved_data)
+    return DriftGuardConfig.model_validate(resolved_data)
 
 
 def mask_secrets(value: str) -> str:
@@ -161,7 +161,7 @@ def mask_secrets(value: str) -> str:
     return masked
 
 
-def load_config(path: Path) -> DataFoldConfig:
+def load_config(path: Path) -> DriftGuardConfig:
     """Load and validate configuration from YAML file."""
     if not path.exists():
         raise FileNotFoundError(f"Config file not found: {path}")
@@ -172,16 +172,16 @@ def load_config(path: Path) -> DataFoldConfig:
     if raw_config is None:
         raise ValueError("Config file is empty")
 
-    return DataFoldConfig.model_validate(raw_config)
+    return DriftGuardConfig.model_validate(raw_config)
 
 
 def find_config_file() -> Path | None:
     """Find config file in standard locations."""
     locations = [
-        Path("./datafold.yaml"),
-        Path("./datafold.yml"),
-        Path.home() / ".config" / "datafold" / "datafold.yaml",
-        Path("/etc/datafold/datafold.yaml"),
+        Path("./driftguard.yaml"),
+        Path("./driftguard.yml"),
+        Path.home() / ".config" / "driftguard" / "driftguard.yaml",
+        Path("/etc/driftguard/driftguard.yaml"),
     ]
 
     for loc in locations:
@@ -196,12 +196,12 @@ def generate_example_config() -> str:
     return """version: "1"
 
 agent:
-  id: my-datafold-agent
+  id: my-driftguard-agent
   log_level: info
 
 storage:
   backend: sqlite
-  path: ./datafold.db
+  path: ./driftguard.db
 
 sources:
   - name: orders_daily

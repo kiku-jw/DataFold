@@ -6,7 +6,7 @@ import statistics
 from datetime import datetime, timezone
 from typing import TYPE_CHECKING
 
-from datafold.models import (
+from driftguard.models import (
     BaselineSummary,
     CollectStatus,
     Decision,
@@ -15,8 +15,8 @@ from datafold.models import (
 )
 
 if TYPE_CHECKING:
-    from datafold.config import BaselineConfig, SourceConfig
-    from datafold.models import DataSnapshot
+    from driftguard.config import BaselineConfig, SourceConfig
+    from driftguard.models import DataSnapshot
 
 
 class DetectionEngine:

@@ -34,7 +34,7 @@ ConfigError: Environment variable DATABASE_URL is not set
 **Fix:**
 ```bash
 export DATABASE_URL="postgresql://user:pass@host:5432/db"
-datafold check
+driftguard check
 ```
 
 Or in Docker:
@@ -209,17 +209,17 @@ volume:
 
 2. Test webhook directly:
    ```bash
-   datafold test-webhook --target slack
+   driftguard test-webhook --target slack
    ```
 
 3. Check cooldown:
    ```bash
-   datafold status  # Shows last alert times
+   driftguard status  # Shows last alert times
    ```
 
 4. Check delivery log:
    ```bash
-   sqlite3 datafold.db "SELECT * FROM delivery_log ORDER BY delivered_at DESC LIMIT 5"
+   sqlite3 driftguard.db "SELECT * FROM delivery_log ORDER BY delivered_at DESC LIMIT 5"
    ```
 
 ### "Signature verification failed"
@@ -274,7 +274,7 @@ volume:
 
 To force re-alert, clear state:
 ```bash
-sqlite3 datafold.db "DELETE FROM alert_states WHERE source_name = 'my_source'"
+sqlite3 driftguard.db "DELETE FROM alert_states WHERE source_name = 'my_source'"
 ```
 
 ## Storage Issues
@@ -305,7 +305,7 @@ sqlite3.OperationalError: disk I/O error
 
 1. Run purge:
    ```bash
-   datafold purge
+   driftguard purge
    ```
 
 2. Reduce retention:
@@ -323,14 +323,14 @@ sqlite3.OperationalError: disk I/O error
 **Fix:**
 ```bash
 # Backup
-cp datafold.db datafold.db.bak
+cp driftguard.db driftguard.db.bak
 
 # Check integrity
-sqlite3 datafold.db "PRAGMA integrity_check"
+sqlite3 driftguard.db "PRAGMA integrity_check"
 
 # If corrupt, recover:
-sqlite3 datafold.db ".dump" | sqlite3 datafold_new.db
-mv datafold_new.db datafold.db
+sqlite3 driftguard.db ".dump" | sqlite3 driftguard_new.db
+mv driftguard_new.db driftguard.db
 ```
 
 ## Runtime Issues
@@ -344,14 +344,14 @@ Error: No such command 'cheek'
 
 **Fix:** Check spelling:
 ```bash
-datafold --help  # List all commands
+driftguard --help  # List all commands
 ```
 
 ### "Permission denied"
 
 **Error:**
 ```
-PermissionError: [Errno 13] Permission denied: './datafold.db'
+PermissionError: [Errno 13] Permission denied: './driftguard.db'
 ```
 
 **Cause:** Wrong file permissions.
@@ -360,10 +360,10 @@ PermissionError: [Errno 13] Permission denied: './datafold.db'
 
 ```bash
 # Check permissions
-ls -la datafold.db
+ls -la driftguard.db
 
 # Fix ownership
-chown $(whoami) datafold.db
+chown $(whoami) driftguard.db
 
 # In Docker, use correct user
 docker run --user $(id -u):$(id -g) ...
@@ -388,30 +388,30 @@ LIMIT 1  -- Ensure single row
 
 **Error:**
 ```
-ConfigError: Config file not found: /app/datafold.yaml
+ConfigError: Config file not found: /app/driftguard.yaml
 ```
 
 **Fix:** Mount config correctly:
 ```bash
-docker run -v $(pwd)/datafold.yaml:/app/datafold.yaml:ro ...
+docker run -v $(pwd)/driftguard.yaml:/app/driftguard.yaml:ro ...
 ```
 
 ### "Volume permissions"
 
 **Error:**
 ```
-PermissionError: /app/data/datafold.db
+PermissionError: /app/data/driftguard.db
 ```
 
 **Fix:** Create volume with correct permissions:
 ```bash
-docker volume create datafold-data
+docker volume create driftguard-data
 
 # Or fix existing
-docker run -v datafold-data:/app/data \
+docker run -v driftguard-data:/app/data \
   --entrypoint /bin/sh \
-  ghcr.io/datafold/agent:latest \
-  -c "chown -R datafold:datafold /app/data"
+  ghcr.io/driftguard/agent:latest \
+  -c "chown -R driftguard:driftguard /app/data"
 ```
 
 ### "Network unreachable"
@@ -427,7 +427,7 @@ ConnectionError: Network is unreachable
 docker run --network host ...
 
 # Or use Docker network
-docker network create datafold-net
+docker network create driftguard-net
 ```
 
 ## Getting Help
@@ -436,19 +436,19 @@ docker network create datafold-net
 
 ```bash
 # Version
-datafold --version
+driftguard --version
 
 # Config (masked)
-datafold render-config
+driftguard render-config
 
 # Status
-datafold status --json
+driftguard status --json
 
 # Recent history
-datafold history <source> --limit 10 --json
+driftguard history <source> --limit 10 --json
 
 # Check verbose
-datafold check --force --verbose 2>&1
+driftguard check --force --verbose 2>&1
 ```
 
 ### Log Levels
@@ -462,14 +462,14 @@ agent:
 
 ```bash
 # All tables
-sqlite3 datafold.db ".tables"
+sqlite3 driftguard.db ".tables"
 
 # Recent snapshots
-sqlite3 datafold.db "SELECT * FROM snapshots ORDER BY collected_at DESC LIMIT 5"
+sqlite3 driftguard.db "SELECT * FROM snapshots ORDER BY collected_at DESC LIMIT 5"
 
 # Alert states
-sqlite3 datafold.db "SELECT * FROM alert_states"
+sqlite3 driftguard.db "SELECT * FROM alert_states"
 
 # Failed deliveries
-sqlite3 datafold.db "SELECT * FROM delivery_log WHERE success = 0"
+sqlite3 driftguard.db "SELECT * FROM delivery_log WHERE success = 0"
 ```

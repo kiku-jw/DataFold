@@ -4,7 +4,7 @@
 import pytest
 from click.testing import CliRunner
 
-from datafold.cli.main import cli
+from driftguard.cli.main import cli
 
 
 @pytest.fixture
@@ -25,7 +25,7 @@ sources: []
 alerting:
   webhooks: []
 """
-    config_path = tmp_path / "datafold.yaml"
+    config_path = tmp_path / "driftguard.yaml"
     config_path.write_text(config_content)
     return config_path
 
@@ -34,7 +34,7 @@ class TestCLI:
     def test_version(self, runner):
         result = runner.invoke(cli, ["--version"])
         assert result.exit_code == 0
-        assert "datafold" in result.output.lower()
+        assert "driftguard" in result.output.lower()
 
     def test_help(self, runner):
         result = runner.invoke(cli, ["--help"])
@@ -44,7 +44,7 @@ class TestCLI:
         assert "validate" in result.output
 
     def test_init_creates_config(self, runner, tmp_path):
-        config_path = tmp_path / "datafold.yaml"
+        config_path = tmp_path / "driftguard.yaml"
 
         with runner.isolated_filesystem(temp_dir=tmp_path):
             result = runner.invoke(cli, ["init", "--path", str(config_path)])

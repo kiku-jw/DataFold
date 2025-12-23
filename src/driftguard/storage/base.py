@@ -6,7 +6,7 @@ from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from datafold.models import AlertState, DataSnapshot, DeliveryResult
+    from driftguard.models import AlertState, DataSnapshot, DeliveryResult
 
 
 class StateStore(ABC):

@@ -1,28 +1,28 @@
 version: "3.8"
 
 services:
-  datafold:
+  driftguard:
     build: .
-    container_name: datafold-agent
+    container_name: driftguard-agent
     command: run
     environment:
       - DATABASE_URL=${DATABASE_URL}
       - SLACK_WEBHOOK_URL=${SLACK_WEBHOOK_URL}
       - WEBHOOK_SECRET=${WEBHOOK_SECRET}
     volumes:
-      - ./datafold.yaml:/app/datafold.yaml:ro
-      - datafold-data:/app/data
+      - ./driftguard.yaml:/app/driftguard.yaml:ro
+      - driftguard-data:/app/data
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "datafold", "status"]
+      test: ["CMD", "driftguard", "status"]
       interval: 60s
       timeout: 10s
       retries: 3
       start_period: 10s
 
-  datafold-check:
+  driftguard-check:
     build: .
-    container_name: datafold-check
+    container_name: driftguard-check
     command: check --force
     profiles:
       - oneshot
@@ -31,8 +31,8 @@ services:
       - SLACK_WEBHOOK_URL=${SLACK_WEBHOOK_URL}
       - WEBHOOK_SECRET=${WEBHOOK_SECRET}
     volumes:
-      - ./datafold.yaml:/app/datafold.yaml:ro
-      - datafold-data:/app/data
+      - ./driftguard.yaml:/app/driftguard.yaml:ro
+      - driftguard-data:/app/data
 
 volumes:
-  datafold-data:
+  driftguard-data:

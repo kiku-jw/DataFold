@@ -1,1 +1,1 @@
-"""Unit tests for DataFold Agent."""
+"""Unit tests for DriftGuard Agent."""

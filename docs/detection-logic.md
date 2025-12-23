@@ -1,10 +1,10 @@
 # Detection Logic
 
-How DataFold detects anomalies in your data.
+How DriftGuard detects anomalies in your data.
 
 ## Overview
 
-DataFold uses a **behavioral baseline approach**:
+DriftGuard uses a **behavioral baseline approach**:
 
 1. Collect metrics from your data source
 2. Compare to historical baseline (learned from past snapshots)
@@ -191,7 +191,7 @@ else:
     confidence = 0.3  # Low confidence, rely on hard limits
 ```
 
-With low confidence, DataFold relies more on configured hard limits (`max_age_hours`, `min_row_count`).
+With low confidence, DriftGuard relies more on configured hard limits (`max_age_hours`, `min_row_count`).
 
 ## Decision Priority
 
@@ -293,8 +293,8 @@ alerting:
 
 ```bash
 # See current baseline
-datafold explain --source orders
+driftguard explain --source orders
 
 # See detection history
-datafold history orders --limit 50
+driftguard history orders --limit 50
 ```

@@ -6,8 +6,8 @@ from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from datafold.config import SourceConfig
-    from datafold.models import DataSnapshot
+    from driftguard.config import SourceConfig
+    from driftguard.models import DataSnapshot
 
 
 class ConnectorError(Exception):

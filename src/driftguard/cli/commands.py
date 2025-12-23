@@ -14,19 +14,19 @@ from croniter import croniter
 from rich.console import Console
 from rich.table import Table
 
-from datafold.alerting import AlertingPipeline
-from datafold.config import DataFoldConfig, load_config, resolve_config_env_vars
-from datafold.connectors import SQLConnector
-from datafold.detection import DetectionEngine
-from datafold.models import DecisionStatus, EventType, WebhookPayload
-from datafold.storage import SQLiteStateStore
+from driftguard.alerting import AlertingPipeline
+from driftguard.config import DriftGuardConfig, load_config, resolve_config_env_vars
+from driftguard.connectors import SQLConnector
+from driftguard.detection import DetectionEngine
+from driftguard.models import DecisionStatus, EventType, WebhookPayload
+from driftguard.storage import SQLiteStateStore
 
 console = Console()
 error_console = Console(stderr=True)
 logger = logging.getLogger(__name__)
 
 
-def get_storage(config_path: Path) -> tuple[SQLiteStateStore, DataFoldConfig]:
+def get_storage(config_path: Path) -> tuple[SQLiteStateStore, DriftGuardConfig]:
     """Initialize storage from config."""
     config = load_config(config_path)
     resolved = resolve_config_env_vars(config)
@@ -49,7 +49,7 @@ def run_check(
     json_output: bool = False,
 ) -> int:
     """Run checks on data sources. Returns exit code (0=ok, 1=error, 2=anomaly)."""
-    from datafold.cli.main import setup_logging
+    from driftguard.cli.main import setup_logging
 
     try:
         store, config = get_storage(config_path)
@@ -216,12 +216,12 @@ def _print_check_results(results: list[dict[str, Any]], dry_run: bool) -> None:
 
 def run_daemon(config_path: Path, health_port: int | None = None) -> None:
     """Run agent in daemon mode."""
-    from datafold.cli.main import setup_logging
+    from driftguard.cli.main import setup_logging
 
     store, config = get_storage(config_path)
     setup_logging(config.agent.log_level)
 
-    console.print("[bold]DataFold Agent[/bold] starting...")
+    console.print("[bold]DriftGuard Agent[/bold] starting...")
     console.print(f"  Agent ID: {config.agent.id}")
     console.print(f"  Sources: {len(config.sources)}")
     console.print(f"  Webhooks: {len(config.alerting.webhooks)}")
@@ -468,8 +468,8 @@ def test_webhook_delivery(
     target_name: str | None = None,
 ) -> None:
     """Send test webhook payload."""
-    from datafold.alerting.webhook import WebhookDelivery
-    from datafold.config import resolve_env_vars
+    from driftguard.alerting.webhook import WebhookDelivery
+    from driftguard.config import resolve_env_vars
 
     store, config = get_storage(config_path)
 
@@ -496,7 +496,7 @@ def test_webhook_delivery(
             agent_id=config.agent.id,
         )
 
-        from datafold.config import WebhookConfig
+        from driftguard.config import WebhookConfig
 
         resolved_webhook = WebhookConfig(
             name=webhook.name,

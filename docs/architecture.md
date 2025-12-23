@@ -75,7 +75,7 @@ Internal design and component overview.
 ## Directory Structure
 
 ```
-src/datafold/
+src/driftguard/
 ├── __init__.py           # Package version
 ├── config.py             # Configuration models (Pydantic)
 ├── models.py             # Core data models
@@ -310,7 +310,7 @@ CREATE TABLE schema_meta (
 Implement the `Connector` interface:
 
 ```python
-from datafold.connectors.base import Connector, DataSnapshot
+from driftguard.connectors.base import Connector, DataSnapshot
 
 class MyConnector(Connector):
     def collect(self, config: SourceConfig) -> DataSnapshot:
@@ -323,7 +323,7 @@ class MyConnector(Connector):
 Implement the `StateStore` interface:
 
 ```python
-from datafold.storage.base import StateStore
+from driftguard.storage.base import StateStore
 
 class PostgresStateStore(StateStore):
     def append_snapshot(self, snapshot: DataSnapshot) -> int:

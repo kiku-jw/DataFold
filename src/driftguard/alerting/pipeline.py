@@ -7,14 +7,14 @@ import logging
 from datetime import datetime, timedelta, timezone
 from typing import TYPE_CHECKING
 
-from datafold.alerting.webhook import WebhookDelivery
-from datafold.config import WebhookConfig, resolve_env_vars
-from datafold.models import AlertState, DecisionStatus, EventType
+from driftguard.alerting.webhook import WebhookDelivery
+from driftguard.config import WebhookConfig, resolve_env_vars
+from driftguard.models import AlertState, DecisionStatus, EventType
 
 if TYPE_CHECKING:
-    from datafold.config import AlertingConfig, SourceConfig
-    from datafold.models import Decision
-    from datafold.storage.base import StateStore
+    from driftguard.config import AlertingConfig, SourceConfig
+    from driftguard.models import Decision
+    from driftguard.storage.base import StateStore
 
 logger = logging.getLogger(__name__)
 

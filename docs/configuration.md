@@ -1,15 +1,15 @@
 # Configuration Reference
 
-Complete reference for `datafold.yaml` configuration.
+Complete reference for `driftguard.yaml` configuration.
 
 ## File Location
 
-DataFold looks for configuration in this order:
+DriftGuard looks for configuration in this order:
 1. `--config` CLI argument
-2. `./datafold.yaml`
-3. `./datafold.yml`
-4. `~/.config/datafold/datafold.yaml`
-5. `/etc/datafold/datafold.yaml`
+2. `./driftguard.yaml`
+3. `./driftguard.yml`
+4. `~/.config/driftguard/driftguard.yaml`
+5. `/etc/driftguard/driftguard.yaml`
 
 ## Full Schema
 
@@ -22,7 +22,7 @@ agent:
 
 storage:
   backend: sqlite               # sqlite (postgres planned)
-  path: ./datafold.db           # Path to SQLite database
+  path: ./driftguard.db           # Path to SQLite database
 
 sources:                        # List of data sources to monitor
   - name: source_name           # Unique identifier
@@ -229,7 +229,7 @@ webhooks:
     secret: ${WEBHOOK_SECRET}
 ```
 
-Signature header: `X-DataFold-Signature: sha256=<hex_digest>`
+Signature header: `X-DriftGuard-Signature: sha256=<hex_digest>`
 
 Verification (Python):
 ```python
@@ -251,8 +251,8 @@ retention:
 
 Run cleanup manually:
 ```bash
-datafold purge --dry-run  # Preview
-datafold purge            # Execute
+driftguard purge --dry-run  # Preview
+driftguard purge            # Execute
 ```
 
 ## Baseline Configuration
@@ -271,7 +271,7 @@ Smaller `window_size` = faster adaptation, more sensitive
 Validate your configuration:
 
 ```bash
-datafold validate
+driftguard validate
 ```
 
 Common validation errors:
@@ -307,4 +307,4 @@ alerting:
 
 ### Production
 
-See [examples/datafold.yaml](../examples/datafold.yaml) for a complete production configuration.
+See [examples/driftguard.yaml](../examples/driftguard.yaml) for a complete production configuration.

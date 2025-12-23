@@ -7,9 +7,9 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from datafold.alerting.webhook import WebhookDelivery
-from datafold.config import WebhookConfig
-from datafold.models import EventType, WebhookPayload
+from driftguard.alerting.webhook import WebhookDelivery
+from driftguard.config import WebhookConfig
+from driftguard.models import EventType, WebhookPayload
 
 
 @pytest.fixture
@@ -51,8 +51,8 @@ class TestWebhookDelivery:
 
         headers = delivery._build_headers(body, payload, webhook_config)
 
-        assert "X-DataFold-Signature" in headers
-        assert headers["X-DataFold-Signature"].startswith("sha256=")
+        assert "X-DriftGuard-Signature" in headers
+        assert headers["X-DriftGuard-Signature"].startswith("sha256=")
 
     def test_signature_verification(self, webhook_config, payload):
         delivery = WebhookDelivery()
@@ -75,11 +75,11 @@ class TestWebhookDelivery:
         headers = delivery._build_headers(body, payload, webhook_config)
 
         assert headers["Content-Type"] == "application/json"
-        assert headers["X-DataFold-Event"] == "anomaly"
-        assert "X-DataFold-Event-ID" in headers
-        assert "X-DataFold-Timestamp" in headers
+        assert headers["X-DriftGuard-Event"] == "anomaly"
+        assert "X-DriftGuard-Event-ID" in headers
+        assert "X-DriftGuard-Timestamp" in headers
 
-    @patch("datafold.alerting.webhook.httpx.Client")
+    @patch("driftguard.alerting.webhook.httpx.Client")
     def test_successful_delivery(self, mock_client_class, webhook_config, payload):
         mock_response = MagicMock()
         mock_response.status_code = 200
@@ -97,7 +97,7 @@ class TestWebhookDelivery:
         assert result.status_code == 200
         assert result.attempts == 1
 
-    @patch("datafold.alerting.webhook.httpx.Client")
+    @patch("driftguard.alerting.webhook.httpx.Client")
     def test_4xx_is_considered_success(self, mock_client_class, webhook_config, payload):
         mock_response = MagicMock()
         mock_response.status_code = 400
@@ -114,8 +114,8 @@ class TestWebhookDelivery:
         assert result.success is True
         assert result.status_code == 400
 
-    @patch("datafold.alerting.webhook.httpx.Client")
-    @patch("datafold.alerting.webhook.time.sleep")
+    @patch("driftguard.alerting.webhook.httpx.Client")
+    @patch("driftguard.alerting.webhook.time.sleep")
     def test_retry_on_5xx(self, mock_sleep, mock_client_class, webhook_config, payload):
         mock_response_500 = MagicMock()
         mock_response_500.status_code = 500

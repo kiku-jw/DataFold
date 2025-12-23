@@ -1,4 +1,4 @@
-# DataFold v0.1.0 - Readiness Assessment
+# DriftGuard v0.1.0 - Readiness Assessment
 
 **Date:** 2024-12-18  
 **Overall Status:** ✅ **100% Production Ready**
@@ -7,7 +7,7 @@
 
 ## Executive Summary
 
-DataFold Agent v0.1.0 is production-ready for its core use case: automated monitoring of SQL data sources with anomaly detection and webhook alerting.
+DriftGuard Agent v0.1.0 is production-ready for its core use case: automated monitoring of SQL data sources with anomaly detection and webhook alerting.
 
 ---
 
@@ -122,8 +122,8 @@ Mypy (types):    0 errors
 
 ### Docker ✅
 ```bash
-docker pull ghcr.io/datafold/agent:latest
-docker run -e DATABASE_URL="..." datafold check
+docker pull ghcr.io/driftguard/agent:latest
+docker run -e DATABASE_URL="..." driftguard check
 ```
 
 ### Kubernetes ✅
@@ -171,7 +171,7 @@ docker run -e DATABASE_URL="..." datafold check
 ### Before Production
 1. ✅ Run E2E test with real data source
 2. ✅ Verify webhook delivery
-3. ✅ Set up monitoring for DataFold itself
+3. ✅ Set up monitoring for DriftGuard itself
 4. ✅ Configure retention policy
 
 ### After v0.1.0 Release
@@ -184,7 +184,7 @@ docker run -e DATABASE_URL="..." datafold check
 
 ## Conclusion
 
-DataFold v0.1.0 is **ready for production deployment** for teams needing automated SQL data quality monitoring. The core detection engine is stable, alerts are reliable, and the CLI provides full operational control.
+DriftGuard v0.1.0 is **ready for production deployment** for teams needing automated SQL data quality monitoring. The core detection engine is stable, alerts are reliable, and the CLI provides full operational control.
 
 **Recommended for:**
 - Analytics teams monitoring dashboards

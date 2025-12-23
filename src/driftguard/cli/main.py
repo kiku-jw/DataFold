@@ -1,4 +1,4 @@
-"""Main CLI entry point for DataFold Agent."""
+"""Main CLI entry point for DriftGuard Agent."""
 
 from __future__ import annotations
 
@@ -9,8 +9,8 @@ from pathlib import Path
 import click
 from rich.console import Console
 
-from datafold import __version__
-from datafold.config import (
+from driftguard import __version__
+from driftguard.config import (
     find_config_file,
     generate_example_config,
     load_config,
@@ -53,7 +53,7 @@ def setup_logging(level: str, format: str = "text") -> None:
 
 
 @click.group()
-@click.version_option(version=__version__, prog_name="datafold")
+@click.version_option(version=__version__, prog_name="driftguard")
 @click.option(
     "--config",
     "-c",
@@ -86,7 +86,7 @@ def cli(
     quiet: bool,
     json_output: bool,
 ) -> None:
-    """DataFold Agent - Automated data quality & drift detection."""
+    """DriftGuard Agent - Automated data quality & drift detection."""
     ctx.ensure_object(dict)
     ctx.obj["config_path"] = Path(config) if config else None
     ctx.obj["verbose"] = verbose
@@ -99,11 +99,11 @@ def cli(
     "--path",
     "-p",
     type=click.Path(),
-    default="./datafold.yaml",
+    default="./driftguard.yaml",
     help="Path to create config file",
 )
 def init(path: str) -> None:
-    """Initialize a new DataFold configuration file."""
+    """Initialize a new DriftGuard configuration file."""
     config_path = Path(path)
 
     if config_path.exists():
@@ -117,8 +117,8 @@ def init(path: str) -> None:
     console.print("\nNext steps:")
     console.print("  1. Edit the config file with your data sources")
     console.print("  2. Set environment variables for secrets")
-    console.print("  3. Run: datafold validate")
-    console.print("  4. Run: datafold check")
+    console.print("  3. Run: driftguard validate")
+    console.print("  4. Run: driftguard check")
 
 
 @cli.command()
@@ -129,7 +129,7 @@ def validate(ctx: click.Context) -> None:
 
     if not config_path:
         error_console.print("[red]Error:[/red] No config file found")
-        error_console.print("Run 'datafold init' to create one")
+        error_console.print("Run 'driftguard init' to create one")
         sys.exit(1)
 
     try:
@@ -205,7 +205,7 @@ def render_config(ctx: click.Context) -> None:
 @click.pass_context
 def check(ctx: click.Context, source: str | None, force: bool, dry_run: bool) -> None:
     """Run checks on data sources."""
-    from datafold.cli.commands import run_check
+    from driftguard.cli.commands import run_check
 
     config_path = ctx.obj["config_path"] or find_config_file()
     verbose = ctx.obj["verbose"]
@@ -232,7 +232,7 @@ def check(ctx: click.Context, source: str | None, force: bool, dry_run: bool) ->
 @click.pass_context
 def run(ctx: click.Context, health_port: int | None) -> None:
     """Run agent in daemon mode with internal scheduler."""
-    from datafold.cli.commands import run_daemon
+    from driftguard.cli.commands import run_daemon
 
     config_path = ctx.obj["config_path"] or find_config_file()
 
@@ -247,7 +247,7 @@ def run(ctx: click.Context, health_port: int | None) -> None:
 @click.pass_context
 def status(ctx: click.Context) -> None:
     """Show current status of all sources."""
-    from datafold.cli.commands import show_status
+    from driftguard.cli.commands import show_status
 
     config_path = ctx.obj["config_path"] or find_config_file()
 
@@ -264,7 +264,7 @@ def status(ctx: click.Context) -> None:
 @click.pass_context
 def history(ctx: click.Context, source_name: str, limit: int) -> None:
     """Show snapshot history for a source."""
-    from datafold.cli.commands import show_history
+    from driftguard.cli.commands import show_history
 
     config_path = ctx.obj["config_path"] or find_config_file()
 
@@ -285,7 +285,7 @@ def history(ctx: click.Context, source_name: str, limit: int) -> None:
 @click.pass_context
 def explain(ctx: click.Context, source: str) -> None:
     """Explain baseline and detection thresholds for a source."""
-    from datafold.cli.commands import explain_source
+    from driftguard.cli.commands import explain_source
 
     config_path = ctx.obj["config_path"] or find_config_file()
 
@@ -305,7 +305,7 @@ def explain(ctx: click.Context, source: str) -> None:
 @click.pass_context
 def test_webhook(ctx: click.Context, target: str | None) -> None:
     """Send a test webhook payload."""
-    from datafold.cli.commands import test_webhook_delivery
+    from driftguard.cli.commands import test_webhook_delivery
 
     config_path = ctx.obj["config_path"] or find_config_file()
 
@@ -321,7 +321,7 @@ def test_webhook(ctx: click.Context, target: str | None) -> None:
 @click.pass_context
 def purge(ctx: click.Context, dry_run: bool) -> None:
     """Clean up old snapshots according to retention policy."""
-    from datafold.cli.commands import run_purge
+    from driftguard.cli.commands import run_purge
 
     config_path = ctx.obj["config_path"] or find_config_file()
 
@@ -336,7 +336,7 @@ def purge(ctx: click.Context, dry_run: bool) -> None:
 @click.pass_context
 def migrate(ctx: click.Context) -> None:
     """Apply storage migrations."""
-    from datafold.cli.commands import run_migrate
+    from driftguard.cli.commands import run_migrate
 
     config_path = ctx.obj["config_path"] or find_config_file()
 

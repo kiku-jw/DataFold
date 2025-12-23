@@ -10,8 +10,8 @@ from urllib.parse import urlparse
 from sqlalchemy import create_engine, text
 from sqlalchemy.exc import OperationalError, ProgrammingError
 
-from datafold.config import SourceConfig, resolve_env_vars
-from datafold.connectors.base import (
+from driftguard.config import SourceConfig, resolve_env_vars
+from driftguard.connectors.base import (
     ConnectionError,
     Connector,
     ConnectorError,
@@ -19,7 +19,7 @@ from datafold.connectors.base import (
     TimeoutError,
     ValidationError,
 )
-from datafold.models import CollectStatus, DataSnapshot
+from driftguard.models import CollectStatus, DataSnapshot
 
 DIALECT_DRIVERS = {
     "postgres": "postgresql+psycopg2",

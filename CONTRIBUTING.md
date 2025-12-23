@@ -1,6 +1,6 @@
-# Contributing to DataFold
+# Contributing to DriftGuard
 
-Thank you for your interest in contributing to DataFold! This document provides guidelines and instructions for contributing.
+Thank you for your interest in contributing to DriftGuard! This document provides guidelines and instructions for contributing.
 
 ## Code of Conduct
 
@@ -18,7 +18,7 @@ Please be respectful and constructive in all interactions. We're building someth
 
 ```bash
 # Clone the repository
-git clone https://github.com/datafold/agent.git
+git clone https://github.com/driftguard/agent.git
 cd agent
 
 # Create virtual environment
@@ -29,7 +29,7 @@ source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 pip install -e ".[dev,all]"
 
 # Verify installation
-datafold --version
+driftguard --version
 ```
 
 ### Running Tests
@@ -39,7 +39,7 @@ datafold --version
 pytest
 
 # Run with coverage
-pytest --cov=src/datafold --cov-report=term-missing
+pytest --cov=src/driftguard --cov-report=term-missing
 
 # Run specific test file
 pytest tests/unit/test_models.py
@@ -73,7 +73,7 @@ ruff format src tests
    - Clear title
    - Steps to reproduce
    - Expected vs actual behavior
-   - Environment details (OS, Python version, DataFold version)
+   - Environment details (OS, Python version, DriftGuard version)
 
 ### Suggesting Features
 
@@ -106,7 +106,7 @@ ruff format src tests
 ## Project Structure
 
 ```
-src/datafold/
+src/driftguard/
 ├── cli/           # CLI commands (Click)
 ├── connectors/    # Data source connectors
 ├── detection/     # Anomaly detection logic
@@ -122,7 +122,7 @@ tests/
 
 ## Adding a New Connector
 
-1. Create `src/datafold/connectors/my_connector.py`
+1. Create `src/driftguard/connectors/my_connector.py`
 2. Implement the `Connector` interface from `base.py`
 3. Add connector to `__init__.py` exports
 4. Add tests in `tests/unit/test_my_connector.py`
@@ -131,8 +131,8 @@ tests/
 Example:
 
 ```python
-from datafold.connectors.base import Connector
-from datafold.models import DataSnapshot
+from driftguard.connectors.base import Connector
+from driftguard.models import DataSnapshot
 
 class MyConnector(Connector):
     def collect(self, config: SourceConfig) -> DataSnapshot:
@@ -146,7 +146,7 @@ class MyConnector(Connector):
 
 ## Adding a New Storage Backend
 
-1. Create `src/datafold/storage/my_backend.py`
+1. Create `src/driftguard/storage/my_backend.py`
 2. Implement the `StateStore` interface from `base.py`
 3. Add backend to `__init__.py` exports
 4. Add tests in `tests/unit/test_my_backend.py`
@@ -172,7 +172,7 @@ Closes #123
 
 ## Release Process
 
-1. Update version in `src/datafold/__init__.py`
+1. Update version in `src/driftguard/__init__.py`
 2. Update CHANGELOG.md
 3. Create git tag: `git tag v0.1.0`
 4. Push tag: `git push origin v0.1.0`

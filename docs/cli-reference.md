@@ -1,11 +1,11 @@
 # CLI Reference
 
-Complete reference for all DataFold commands.
+Complete reference for all DriftGuard commands.
 
 ## Global Options
 
 ```bash
-datafold [OPTIONS] COMMAND [ARGS]
+driftguard [OPTIONS] COMMAND [ARGS]
 ```
 
 | Option | Description |
@@ -24,17 +24,17 @@ datafold [OPTIONS] COMMAND [ARGS]
 Create a new configuration file.
 
 ```bash
-datafold init [OPTIONS]
+driftguard init [OPTIONS]
 ```
 
 | Option | Description |
 |--------|-------------|
-| `--path PATH` | Output path (default: `./datafold.yaml`) |
+| `--path PATH` | Output path (default: `./driftguard.yaml`) |
 | `--force` | Overwrite existing file |
 
 **Example:**
 ```bash
-datafold init --path /etc/datafold/config.yaml
+driftguard init --path /etc/driftguard/config.yaml
 ```
 
 ---
@@ -44,7 +44,7 @@ datafold init --path /etc/datafold/config.yaml
 Validate configuration file.
 
 ```bash
-datafold validate [OPTIONS]
+driftguard validate [OPTIONS]
 ```
 
 | Option | Description |
@@ -53,7 +53,7 @@ datafold validate [OPTIONS]
 
 **Example:**
 ```bash
-datafold validate
+driftguard validate
 # Output:
 # ✓ Configuration is valid
 #   Sources: 3
@@ -71,12 +71,12 @@ datafold validate
 Show resolved configuration with environment variables expanded and secrets masked.
 
 ```bash
-datafold render-config
+driftguard render-config
 ```
 
 **Example:**
 ```bash
-datafold render-config
+driftguard render-config
 # Output:
 # sources:
 #   - name: orders
@@ -90,7 +90,7 @@ datafold render-config
 Run checks on data sources.
 
 ```bash
-datafold check [OPTIONS]
+driftguard check [OPTIONS]
 ```
 
 | Option | Description |
@@ -102,16 +102,16 @@ datafold check [OPTIONS]
 **Examples:**
 ```bash
 # Check all sources (respects schedule)
-datafold check
+driftguard check
 
 # Force check all sources
-datafold check --force
+driftguard check --force
 
 # Check specific source
-datafold check --source orders --force
+driftguard check --source orders --force
 
 # Preview without side effects
-datafold check --force --dry-run
+driftguard check --force --dry-run
 ```
 
 **Output:**
@@ -144,7 +144,7 @@ Summary: 1 OK, 1 ANOMALY
 Start daemon mode with internal scheduler.
 
 ```bash
-datafold run [OPTIONS]
+driftguard run [OPTIONS]
 ```
 
 | Option | Description |
@@ -154,10 +154,10 @@ datafold run [OPTIONS]
 **Example:**
 ```bash
 # Continuous daemon
-datafold run
+driftguard run
 
 # Single cycle (useful for external schedulers)
-datafold run --once
+driftguard run --once
 ```
 
 **Behavior:**
@@ -172,7 +172,7 @@ datafold run --once
 Show current status of all sources.
 
 ```bash
-datafold status [OPTIONS]
+driftguard status [OPTIONS]
 ```
 
 | Option | Description |
@@ -181,7 +181,7 @@ datafold status [OPTIONS]
 
 **Example:**
 ```bash
-datafold status
+driftguard status
 ```
 
 **Output:**
@@ -202,7 +202,7 @@ datafold status
 Show snapshot history for a source.
 
 ```bash
-datafold history SOURCE [OPTIONS]
+driftguard history SOURCE [OPTIONS]
 ```
 
 | Argument | Description |
@@ -216,7 +216,7 @@ datafold history SOURCE [OPTIONS]
 
 **Example:**
 ```bash
-datafold history orders --limit 5
+driftguard history orders --limit 5
 ```
 
 **Output:**
@@ -240,7 +240,7 @@ datafold history orders --limit 5
 Explain baseline and detection thresholds for a source.
 
 ```bash
-datafold explain --source SOURCE [OPTIONS]
+driftguard explain --source SOURCE [OPTIONS]
 ```
 
 | Option | Description |
@@ -250,7 +250,7 @@ datafold explain --source SOURCE [OPTIONS]
 
 **Example:**
 ```bash
-datafold explain --source orders
+driftguard explain --source orders
 ```
 
 **Output:**
@@ -285,7 +285,7 @@ Snapshots in baseline:
 Send a test webhook payload.
 
 ```bash
-datafold test-webhook [OPTIONS]
+driftguard test-webhook [OPTIONS]
 ```
 
 | Option | Description |
@@ -294,7 +294,7 @@ datafold test-webhook [OPTIONS]
 
 **Example:**
 ```bash
-datafold test-webhook --target slack
+driftguard test-webhook --target slack
 ```
 
 **Output:**
@@ -311,10 +311,10 @@ Testing webhook: slack
 Apply storage migrations.
 
 ```bash
-datafold migrate
+driftguard migrate
 ```
 
-Run after upgrading DataFold to apply schema changes.
+Run after upgrading DriftGuard to apply schema changes.
 
 ---
 
@@ -323,7 +323,7 @@ Run after upgrading DataFold to apply schema changes.
 Clean up old snapshots according to retention policy.
 
 ```bash
-datafold purge [OPTIONS]
+driftguard purge [OPTIONS]
 ```
 
 | Option | Description |
@@ -333,13 +333,13 @@ datafold purge [OPTIONS]
 **Example:**
 ```bash
 # Preview
-datafold purge --dry-run
+driftguard purge --dry-run
 # Output:
 # Would delete 127 snapshots older than 30 days
 # Would keep 10 minimum per source
 
 # Execute
-datafold purge
+driftguard purge
 # Output:
 # Deleted 127 snapshots
 ```
@@ -351,7 +351,7 @@ datafold purge
 All commands support `--json` for machine-readable output:
 
 ```bash
-datafold status --json
+driftguard status --json
 ```
 
 ```json
@@ -367,7 +367,7 @@ datafold status --json
 ```
 
 ```bash
-datafold check --force --json
+driftguard check --force --json
 ```
 
 ```json
@@ -398,7 +398,7 @@ datafold check --force --json
 
 Use in scripts:
 ```bash
-datafold check --force
+driftguard check --force
 if [ $? -eq 2 ]; then
     echo "Anomaly detected!"
 fi

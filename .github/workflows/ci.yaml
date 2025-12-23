@@ -33,7 +33,7 @@ jobs:
         run: mypy src
 
       - name: Run tests
-        run: pytest --cov=src/datafold --cov-report=xml --cov-fail-under=80
+        run: pytest --cov=src/driftguard --cov-report=xml --cov-fail-under=80
 
       - name: Check documentation consistency
         run: python scripts/check-docs.py

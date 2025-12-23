@@ -1,8 +1,8 @@
 # Overview
 
-## What is DataFold?
+## What is DriftGuard?
 
-DataFold is an open-source CLI agent that monitors your SQL data sources and automatically detects data quality issues:
+DriftGuard is an open-source CLI agent that monitors your SQL data sources and automatically detects data quality issues:
 
 - **Freshness problems** - data stopped updating
 - **Volume anomalies** - unexpected drops or spikes in row counts
@@ -19,7 +19,7 @@ Your data pipeline can fail in ways that don't trigger errors:
 ❌ Reality: All rows are from yesterday (stale data)
 ```
 
-Traditional monitoring checks if jobs run. DataFold checks if data is actually healthy.
+Traditional monitoring checks if jobs run. DriftGuard checks if data is actually healthy.
 
 ## Key Features
 
@@ -36,7 +36,7 @@ Traditional monitoring checks if jobs run. DataFold checks if data is actually h
 
 ```
 ┌─────────────────┐     ┌──────────────────┐     ┌─────────────────┐
-│   Data Source   │────▶│  DataFold Agent  │────▶│  Webhook Alert  │
+│   Data Source   │────▶│  DriftGuard Agent  │────▶│  Webhook Alert  │
 │  (PostgreSQL)   │     │                  │     │    (Slack)      │
 └─────────────────┘     └──────────────────┘     └─────────────────┘
                                │
@@ -150,11 +150,11 @@ sources:
       max_age_hours: 0.5  # 30 minutes max staleness
 ```
 
-## What DataFold Is NOT
+## What DriftGuard Is NOT
 
 - **Not a data quality rules engine** - No custom SQL assertions
 - **Not a data catalog** - No metadata management
 - **Not a lineage tracker** - No dependency mapping
 - **Not dbt tests** - Focused on behavioral patterns, not schema validation
 
-DataFold is a **behavioral anomaly detector** that learns what "normal" looks like and alerts when reality deviates.
+DriftGuard is a **behavioral anomaly detector** that learns what "normal" looks like and alerts when reality deviates.

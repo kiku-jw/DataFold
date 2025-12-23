@@ -1,6 +1,6 @@
 # Deployment
 
-Production deployment guides for DataFold.
+Production deployment guides for DriftGuard.
 
 ## Deployment Options
 
@@ -17,17 +17,17 @@ Production deployment guides for DataFold.
 ### Pull Image
 
 ```bash
-docker pull ghcr.io/datafold/agent:latest
+docker pull ghcr.io/driftguard/agent:latest
 ```
 
 ### Run Check
 
 ```bash
 docker run --rm \
-  -v $(pwd)/datafold.yaml:/app/datafold.yaml:ro \
+  -v $(pwd)/driftguard.yaml:/app/driftguard.yaml:ro \
   -e DATABASE_URL="postgresql://..." \
   -e SLACK_WEBHOOK_URL="https://..." \
-  ghcr.io/datafold/agent:latest \
+  ghcr.io/driftguard/agent:latest \
   check --force
 ```
 
@@ -35,26 +35,26 @@ docker run --rm \
 
 ```bash
 docker run -d \
-  --name datafold \
+  --name driftguard \
   --restart unless-stopped \
-  -v $(pwd)/datafold.yaml:/app/datafold.yaml:ro \
-  -v datafold-data:/app/data \
+  -v $(pwd)/driftguard.yaml:/app/driftguard.yaml:ro \
+  -v driftguard-data:/app/data \
   -e DATABASE_URL="postgresql://..." \
   -e SLACK_WEBHOOK_URL="https://..." \
-  ghcr.io/datafold/agent:latest \
+  ghcr.io/driftguard/agent:latest \
   run
 ```
 
 ### Build Custom Image
 
 ```dockerfile
-FROM ghcr.io/datafold/agent:latest
+FROM ghcr.io/driftguard/agent:latest
 
 # Add custom drivers
 RUN pip install snowflake-connector-python
 
 # Add your config
-COPY datafold.yaml /app/datafold.yaml
+COPY driftguard.yaml /app/driftguard.yaml
 ```
 
 ## Docker Compose
@@ -66,24 +66,24 @@ COPY datafold.yaml /app/datafold.yaml
 version: "3.8"
 
 services:
-  datafold:
-    image: ghcr.io/datafold/agent:latest
+  driftguard:
+    image: ghcr.io/driftguard/agent:latest
     command: run
     restart: unless-stopped
     environment:
       - DATABASE_URL=${DATABASE_URL}
       - SLACK_WEBHOOK_URL=${SLACK_WEBHOOK_URL}
     volumes:
-      - ./datafold.yaml:/app/datafold.yaml:ro
-      - datafold-data:/app/data
+      - ./driftguard.yaml:/app/driftguard.yaml:ro
+      - driftguard-data:/app/data
     healthcheck:
-      test: ["CMD", "datafold", "status"]
+      test: ["CMD", "driftguard", "status"]
       interval: 60s
       timeout: 10s
       retries: 3
 
 volumes:
-  datafold-data:
+  driftguard-data:
 ```
 
 ### With PostgreSQL (for testing)
@@ -92,26 +92,26 @@ volumes:
 version: "3.8"
 
 services:
-  datafold:
-    image: ghcr.io/datafold/agent:latest
+  driftguard:
+    image: ghcr.io/driftguard/agent:latest
     command: run
     depends_on:
       postgres:
         condition: service_healthy
     environment:
-      - DATABASE_URL=postgresql://datafold:datafold@postgres:5432/testdb
+      - DATABASE_URL=postgresql://driftguard:driftguard@postgres:5432/testdb
     volumes:
-      - ./datafold.yaml:/app/datafold.yaml:ro
-      - datafold-data:/app/data
+      - ./driftguard.yaml:/app/driftguard.yaml:ro
+      - driftguard-data:/app/data
 
   postgres:
     image: postgres:15
     environment:
-      POSTGRES_USER: datafold
-      POSTGRES_PASSWORD: datafold
+      POSTGRES_USER: driftguard
+      POSTGRES_PASSWORD: driftguard
       POSTGRES_DB: testdb
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U datafold"]
+      test: ["CMD-SHELL", "pg_isready -U driftguard"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -119,7 +119,7 @@ services:
       - postgres-data:/var/lib/postgresql/data
 
 volumes:
-  datafold-data:
+  driftguard-data:
   postgres-data:
 ```
 
@@ -130,19 +130,19 @@ volumes:
 Best for scheduled checks:
 
 ```yaml
-# datafold-cronjob.yaml
+# driftguard-cronjob.yaml
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: datafold-config
+  name: driftguard-config
 data:
-  datafold.yaml: |
+  driftguard.yaml: |
     version: "1"
     agent:
-      id: k8s-datafold
+      id: k8s-driftguard
     storage:
       backend: sqlite
-      path: /data/datafold.db
+      path: /data/driftguard.db
     sources:
       - name: orders
         type: sql
@@ -162,7 +162,7 @@ data:
 apiVersion: v1
 kind: Secret
 metadata:
-  name: datafold-secrets
+  name: driftguard-secrets
 type: Opaque
 stringData:
   DATABASE_URL: "postgresql://user:pass@host:5432/db"
@@ -171,7 +171,7 @@ stringData:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: datafold-data
+  name: driftguard-data
 spec:
   accessModes: [ReadWriteOnce]
   resources:
@@ -181,7 +181,7 @@ spec:
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: datafold
+  name: driftguard
 spec:
   schedule: "*/15 * * * *"
   concurrencyPolicy: Forbid
@@ -194,16 +194,16 @@ spec:
         spec:
           restartPolicy: OnFailure
           containers:
-            - name: datafold
-              image: ghcr.io/datafold/agent:latest
-              command: ["datafold", "check", "--force"]
+            - name: driftguard
+              image: ghcr.io/driftguard/agent:latest
+              command: ["driftguard", "check", "--force"]
               envFrom:
                 - secretRef:
-                    name: datafold-secrets
+                    name: driftguard-secrets
               volumeMounts:
                 - name: config
-                  mountPath: /app/datafold.yaml
-                  subPath: datafold.yaml
+                  mountPath: /app/driftguard.yaml
+                  subPath: driftguard.yaml
                 - name: data
                   mountPath: /data
               resources:
@@ -216,15 +216,15 @@ spec:
           volumes:
             - name: config
               configMap:
-                name: datafold-config
+                name: driftguard-config
             - name: data
               persistentVolumeClaim:
-                claimName: datafold-data
+                claimName: driftguard-data
 ```
 
 Deploy:
 ```bash
-kubectl apply -f datafold-cronjob.yaml
+kubectl apply -f driftguard-cronjob.yaml
 ```
 
 ### Deployment (Daemon Mode)
@@ -235,28 +235,28 @@ For continuous monitoring:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: datafold
+  name: driftguard
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: datafold
+      app: driftguard
   template:
     metadata:
       labels:
-        app: datafold
+        app: driftguard
     spec:
       containers:
-        - name: datafold
-          image: ghcr.io/datafold/agent:latest
-          command: ["datafold", "run"]
+        - name: driftguard
+          image: ghcr.io/driftguard/agent:latest
+          command: ["driftguard", "run"]
           envFrom:
             - secretRef:
-                name: datafold-secrets
+                name: driftguard-secrets
           volumeMounts:
             - name: config
-              mountPath: /app/datafold.yaml
-              subPath: datafold.yaml
+              mountPath: /app/driftguard.yaml
+              subPath: driftguard.yaml
             - name: data
               mountPath: /data
           resources:
@@ -268,16 +268,16 @@ spec:
               cpu: "500m"
           livenessProbe:
             exec:
-              command: ["datafold", "status"]
+              command: ["driftguard", "status"]
             initialDelaySeconds: 30
             periodSeconds: 60
       volumes:
         - name: config
           configMap:
-            name: datafold-config
+            name: driftguard-config
         - name: data
           persistentVolumeClaim:
-            claimName: datafold-data
+            claimName: driftguard-data
 ```
 
 ## Systemd (Linux)
@@ -285,23 +285,23 @@ spec:
 ### Install
 
 ```bash
-pip install datafold-agent
+pip install driftguard-agent
 ```
 
 ### Create Service
 
 ```ini
-# /etc/systemd/system/datafold.service
+# /etc/systemd/system/driftguard.service
 [Unit]
-Description=DataFold Agent
+Description=DriftGuard Agent
 After=network.target
 
 [Service]
 Type=simple
-User=datafold
-Group=datafold
-WorkingDirectory=/opt/datafold
-ExecStart=/usr/local/bin/datafold run
+User=driftguard
+Group=driftguard
+WorkingDirectory=/opt/driftguard
+ExecStart=/usr/local/bin/driftguard run
 Restart=always
 RestartSec=10
 Environment=DATABASE_URL=postgresql://...
@@ -315,15 +315,15 @@ WantedBy=multi-user.target
 
 ```bash
 sudo systemctl daemon-reload
-sudo systemctl enable datafold
-sudo systemctl start datafold
-sudo systemctl status datafold
+sudo systemctl enable driftguard
+sudo systemctl start driftguard
+sudo systemctl status driftguard
 ```
 
 ### View Logs
 
 ```bash
-sudo journalctl -u datafold -f
+sudo journalctl -u driftguard -f
 ```
 
 ## Production Checklist
@@ -351,29 +351,29 @@ sudo journalctl -u datafold -f
 ### Maintenance
 
 - [ ] Retention policy configured
-- [ ] Regular `datafold purge` scheduled
+- [ ] Regular `driftguard purge` scheduled
 - [ ] Backup strategy for state database
 
 ## Scaling
 
-DataFold is designed for single-instance operation. For multi-region:
+DriftGuard is designed for single-instance operation. For multi-region:
 
 1. Deploy one agent per region
 2. Use unique `agent.id` for each
 3. Configure region-specific webhooks
 4. (Future) Use shared Postgres backend
 
-## Monitoring DataFold Itself
+## Monitoring DriftGuard Itself
 
-Monitor the DataFold agent:
+Monitor the DriftGuard agent:
 
 ```yaml
 # External healthcheck
 sources:
-  - name: datafold_self
+  - name: driftguard_self
     type: sql
     dialect: sqlite
-    connection: /data/datafold.db
+    connection: /data/driftguard.db
     query: |
       SELECT COUNT(*) as row_count,
              MAX(collected_at) as latest_timestamp
@@ -387,5 +387,5 @@ sources:
 Or use external monitoring:
 ```bash
 # Healthcheck endpoint (returns exit code)
-datafold status && echo "healthy" || echo "unhealthy"
+driftguard status && echo "healthy" || echo "unhealthy"
 ```

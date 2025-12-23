@@ -3,8 +3,8 @@
 
 import pytest
 
-from datafold.config import (
-    DataFoldConfig,
+from driftguard.config import (
+    DriftGuardConfig,
     SourceConfig,
     generate_example_config,
     load_config,
@@ -76,9 +76,9 @@ class TestSourceConfig:
             )
 
 
-class TestDataFoldConfig:
+class TestDriftGuardConfig:
     def test_valid_config(self):
-        config = DataFoldConfig(
+        config = DriftGuardConfig(
             version="1",
             sources=[],
         )
@@ -86,7 +86,7 @@ class TestDataFoldConfig:
 
     def test_invalid_version(self):
         with pytest.raises(ValueError, match="Unsupported config version"):
-            DataFoldConfig(version="2")
+            DriftGuardConfig(version="2")
 
 
 class TestLoadConfig:
@@ -104,7 +104,7 @@ sources:
     connection: ${DATABASE_URL}
     query: SELECT COUNT(*) as row_count FROM test
 """
-        config_file = tmp_path / "datafold.yaml"
+        config_file = tmp_path / "driftguard.yaml"
         config_file.write_text(config_content)
 
         config = load_config(config_file)

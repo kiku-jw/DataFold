@@ -5,8 +5,8 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from datafold.config import SourceConfig
-from datafold.connectors.sql import SQLConnector
+from driftguard.config import SourceConfig
+from driftguard.connectors.sql import SQLConnector
 
 
 @pytest.fixture
@@ -25,7 +25,7 @@ def source_config(monkeypatch):
     )
 
 class TestSQLConnectorMock:
-    @patch("datafold.connectors.sql.create_engine")
+    @patch("driftguard.connectors.sql.create_engine")
     def test_collect_success_postgres(self, mock_create_engine, connector, source_config):
         # Mock engine and connection
         mock_engine = MagicMock()
@@ -49,7 +49,7 @@ class TestSQLConnectorMock:
             {"name": "latest_timestamp", "type": "datetime"}
         ]
 
-    @patch("datafold.connectors.sql.create_engine")
+    @patch("driftguard.connectors.sql.create_engine")
     def test_collect_failure_connection(self, mock_create_engine, connector, source_config):
         from sqlalchemy.exc import OperationalError
         mock_create_engine.side_effect = OperationalError("Connection error", None, None)

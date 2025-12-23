@@ -10,10 +10,10 @@ from typing import TYPE_CHECKING, Any
 
 import httpx
 
-from datafold.models import DeliveryResult, EventType, WebhookPayload
+from driftguard.models import DeliveryResult, EventType, WebhookPayload
 
 if TYPE_CHECKING:
-    from datafold.config import WebhookConfig
+    from driftguard.config import WebhookConfig
 
 RETRY_DELAYS = [1, 5, 15]
 RETRYABLE_STATUS_CODES = {408, 429, 500, 502, 503, 504}
@@ -107,14 +107,14 @@ class WebhookDelivery:
         """Build request headers including HMAC signature."""
         headers = {
             "Content-Type": "application/json",
-            "X-DataFold-Event": payload.event_type.value,
-            "X-DataFold-Timestamp": payload.timestamp.isoformat(),
-            "X-DataFold-Event-ID": payload.event_id,
+            "X-DriftGuard-Event": payload.event_type.value,
+            "X-DriftGuard-Timestamp": payload.timestamp.isoformat(),
+            "X-DriftGuard-Event-ID": payload.event_id,
         }
 
         if config.secret:
             signature = self._sign(body, config.secret)
-            headers["X-DataFold-Signature"] = f"sha256={signature}"
+            headers["X-DriftGuard-Signature"] = f"sha256={signature}"
 
         return headers
 

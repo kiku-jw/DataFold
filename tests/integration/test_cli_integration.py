@@ -5,7 +5,7 @@ import pytest
 import yaml
 from click.testing import CliRunner
 
-from datafold.cli.main import cli
+from driftguard.cli.main import cli
 
 
 @pytest.fixture
@@ -17,7 +17,7 @@ def full_config(tmp_path):
     config = {
         "version": "1",
         "agent": {"id": "test-cli-agent"},
-        "storage": {"backend": "sqlite", "path": str(tmp_path / "datafold.db")},
+        "storage": {"backend": "sqlite", "path": str(tmp_path / "driftguard.db")},
         "sources": [
             {
                 "name": "test_src",
@@ -30,7 +30,7 @@ def full_config(tmp_path):
         ],
         "alerting": {"webhooks": []}
     }
-    config_path = tmp_path / "datafold.yaml"
+    config_path = tmp_path / "driftguard.yaml"
     with open(config_path, "w") as f:
         yaml.dump(config, f)
 

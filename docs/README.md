@@ -1,10 +1,10 @@
-# DataFold Documentation
+# DriftGuard Documentation
 
-Complete documentation for DataFold Agent - automated data quality and drift detection.
+Complete documentation for DriftGuard Agent - automated data quality and drift detection.
 
 ## Table of Contents
 
-1. [Overview](./overview.md) - What is DataFold and why you need it
+1. [Overview](./overview.md) - What is DriftGuard and why you need it
 2. [Quick Start](./quickstart.md) - Get up and running in 5 minutes
 3. [Configuration](./configuration.md) - Complete configuration reference
 4. [CLI Reference](./cli-reference.md) - All commands and options

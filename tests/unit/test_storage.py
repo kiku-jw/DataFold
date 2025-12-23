@@ -4,14 +4,14 @@ from datetime import datetime, timedelta, timezone
 
 import pytest
 
-from datafold.models import (
+from driftguard.models import (
     AlertState,
     CollectStatus,
     DataSnapshot,
     DecisionStatus,
     DeliveryResult,
 )
-from datafold.storage.sqlite import SQLiteStateStore
+from driftguard.storage.sqlite import SQLiteStateStore
 
 
 @pytest.fixture
