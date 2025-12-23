@@ -110,8 +110,8 @@ class DetectionEngine:
             row_count_max=row_count_max,
             row_count_stddev=row_count_stddev,
             expected_interval_seconds=expected_interval,
-            oldest_snapshot_at=min(s.collected_at for s in history),
-            newest_snapshot_at=max(s.collected_at for s in history),
+            oldest_snapshot_at=sorted_history[0].collected_at if sorted_history else None,
+            newest_snapshot_at=sorted_history[-1].collected_at if sorted_history else None,
         )
 
     def _check_freshness(
